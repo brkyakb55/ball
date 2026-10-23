@@ -126,8 +126,8 @@ function leaveRoom(c) {
 }
 
 function startMatch(room) {
-  if (!room.bots && (humansOn(room, 0) < 1 || humansOn(room, 1) < 1)) {
-    for (const m of room.members.values()) send(m, { t: 'err', msg: 'Botlar kapalıyken maçı başlatmak için iki takımda da en az bir gerçek oyuncu olmalı.' }); return;
+  if (!room.bots && humansOn(room, 0) + humansOn(room, 1) < 1) {
+    for (const m of room.members.values()) send(m, { t: 'err', msg: 'Maçı başlatmak için en az bir oyuncu olmalı.' }); return;
   }
   const slots = [];
   for (const t of [0, 1]) {

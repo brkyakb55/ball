@@ -37,16 +37,18 @@ class Game {
       p.req = null;
     }
     this.ball = { x: 500, y: 300, vx: 0, vy: 0, z: 0, vz: 0, curve: 0 };
+    this.holder = null;
     const kk = this.players.find(p => p.t === this.kickTeam && p.active) || this.players.find(p => p.active);
     if (!kk) return;
+    this.kickTeam = kk.t;
     kk.x = this.kickTeam ? 526 : 474; kk.y = 300; kk.face = this.kickTeam ? Math.PI : 0; kk.ba = kk.face;
     this.holder = kk;
-    this.kick = { on: true, t: 3, team: this.kickTeam, holder: kk };
+    this.kick = { on: true, t: 3, team: kk.t, holder: kk };
   }
 
   canSteal(st, h) {
     const a = Math.atan2(st.y - h.y, st.x - h.x), b = h.ba === undefined ? h.face : h.ba;
-    return Math.abs(Math.atan2(Math.sin(a - b), Math.cos(a - b))) < .85;
+    return Math.abs(Math.atan2(Math.sin(a - b), Math.cos(a - b))) < 1.25;
   }
 
   throwBall(p, power, hard, lob) {
@@ -164,19 +166,26 @@ class Game {
     p.req = null;
     const holder = this.holder;
     if (p.dash > 0 && p.lunge) {
-      if ((!holder && !(ball.z > 14) && dist(p, ball) < PR + BR + 14) || (holder && holder.t !== p.t && dist(p, holder) < PR * 2 + 6 && this.canSteal(p, holder))) { p.dash = 0; p.lg = 1; p.gt = .3; }
+      if ((!holder && !(ball.z > 14) && dist(p, ball) < PR + BR + 22) || (holder && holder.t !== p.t && dist(p, holder) < PR * 2 + 14 && this.canSteal(p, holder))) { p.dash = 0; p.lg = 1; p.gt = .3; }
     }
     if (!(p.dash > 0)) p.lunge = false;
     p.lg = (p.lg || 0) - dt;
     let near = false;
     if (p.cool <= 0 || p.lg > 0) {
-      if (!this.holder && !(ball.z > 14) && dist(p, ball) < PR + BR + (Math.hypot(ball.vx, ball.vy) > 110 ? 24 : 10)) near = true;
-      else if (this.holder && this.holder.t !== p.t && p.lg > 0 && dist(p, this.holder) < PR * 2 + 6 && this.canSteal(p, this.holder)) near = true;
+      if (!this.holder && !(ball.z > 14) && dist(p, ball) < PR + BR + (Math.hypot(ball.vx, ball.vy) > 110 ? 36 : 22)) near = true;
+      else if (this.holder && this.holder.t !== p.t && p.lg > 0 && dist(p, this.holder) < PR * 2 + 14 && this.canSteal(p, this.holder)) near = true;
     }
     if (near) { p.gt = (p.gt || 0) + dt; if (p.gt >= 0) { this.take(p); p.gt = 0; p.lg = 0; } } else p.gt = 0;
     const b = !!inp.sp;
-    if (b && !p.sprev && (this.holder === p || (!this.holder && dist(p, ball) < PR + BR + 16))) this.throwBall(p, 1.0, true);
+    if (b && !p.sprev && (this.holder === p || (!this.holder && dist(p, ball) < PR + BR + 22))) this.throwBall(p, 1.0, true);
     p.sprev = b;
+  }
+
+  bound(o, r) {
+    let minX = L + r, maxX = R - r;
+    if (o.y > GY1 + r && o.y < GY2 - r) { minX = L - GD + r; maxX = R + GD - r; }
+    if (o.x < L + r || o.x > R - r) o.y = Math.max(GY1 + r, Math.min(GY2 - r, o.y));
+    o.x = Math.max(minX, Math.min(maxX, o.x)); o.y = Math.max(T + r, Math.min(B - r, o.y));
   }
 
   goal(t) {
@@ -199,7 +208,7 @@ class Game {
         p.vx = p.dvx; p.vy = p.dvy; p.dash -= dt;
       } else { p.vx += (p.mx * sp - p.vx) * k; p.vy += (p.my * sp - p.vy) * k; }
       p.x += p.vx * dt; p.y += p.vy * dt;
-      p.x = Math.max(L + PR, Math.min(R - PR, p.x)); p.y = Math.max(T + PR, Math.min(B - PR, p.y));
+      this.bound(p, PR);
     }
     const kick = this.kick;
     if (kick.on) { kick.t -= dt; if (kick.t <= 0 || this.holder !== kick.holder) kick.on = false; }
@@ -216,9 +225,9 @@ class Game {
     if (holder) {
       holder.ba = holder.face;
       ball.x = holder.x + Math.cos(holder.ba) * (PR + BR + 1); ball.y = holder.y + Math.sin(holder.ba) * (PR + BR + 1);
-      ball.x = Math.max(L + BR, Math.min(R - BR, ball.x)); ball.y = Math.max(T + BR, Math.min(B - BR, ball.y));
+      this.bound(ball, BR);
       const dx = holder.x - ball.x, dy = holder.y - ball.y, d = Math.hypot(dx, dy), md = PR + BR + 1;
-      if (d < md && d > 0) { holder.x = Math.max(L + PR, Math.min(R - PR, ball.x + dx / d * md)); holder.y = Math.max(T + PR, Math.min(B - PR, ball.y + dy / d * md)); }
+      if (d < md && d > 0) { holder.x = ball.x + dx / d * md; holder.y = ball.y + dy / d * md; this.bound(holder, PR); }
       ball.vx = ball.vy = 0;
     } else {
       ball.x += ball.vx * dt; ball.y += ball.vy * dt;
@@ -243,9 +252,9 @@ class Game {
       if (ball.x < L || ball.x > R) { minY = GY1 + BR; maxY = GY2 - BR; }
       if (ball.x < minX) { ball.x = minX; ball.vx *= -.8; } if (ball.x > maxX) { ball.x = maxX; ball.vx *= -.8; }
       if (ball.y < minY) { ball.y = minY; ball.vy *= -.8; } if (ball.y > maxY) { ball.y = maxY; ball.vy *= -.8; }
-      if (ball.x > R + 4) { this.score[0]++; this.kickTeam = 1; this.goal('GOL! Mavi'); }
-      else if (ball.x < L - 4) { this.score[1]++; this.kickTeam = 0; this.goal('GOL! Kırmızı'); }
     }
+    if (ball.x > R + 4) { this.score[0]++; this.kickTeam = 1; this.goal('GOL! Mavi'); }
+    else if (ball.x < L - 4) { this.score[1]++; this.kickTeam = 0; this.goal('GOL! Kırmızı'); }
   }
 
   snap() {
