@@ -1,0 +1,12 @@
+{
+  "name": "online-futbol",
+  "version": "1.0.0",
+  "description": "3'e 3 online top-down futbol (lobi, nick, odalar)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
