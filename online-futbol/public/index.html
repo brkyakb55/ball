@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
 <title>Tut &amp; Fırlat Online</title>
 <style>
 :root{--bg:#eef3e8;--ink:#14210f;--panel:#ffffff;--mute:#4d5c44;--line:#c9d6bd;--blue:#1b63e6;--red:#e2302d;--accent:#2f8f1f}
@@ -58,6 +58,22 @@ canvas{width:100%;height:auto;max-height:calc(100dvh - 270px);min-height:180px;o
 #b4 span{font-size:1.5rem}
 .hint{max-width:1000px;color:var(--mute);font-size:.9rem;line-height:1.5;text-align:center}
 kbd{background:var(--panel);border:1px solid var(--mute);border-radius:5px;padding:1px 7px;font-family:inherit;color:var(--ink)}
+
+html,body{overscroll-behavior:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#gfs{display:none}
+@media (orientation:landscape) and (max-height:560px){
+  #game:not(.hidden){position:fixed;inset:0;z-index:50;background:#0b1208;display:block;padding:0;margin:0;overflow:hidden}
+  #game .wrap{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:auto;max-width:none}
+  #game canvas{height:100dvh;width:auto;max-height:none;min-height:0;aspect-ratio:5/3;border-radius:0}
+  #game .controls{position:absolute;inset:0;max-width:none;width:auto;height:auto;pointer-events:none;z-index:3}
+  #game .controls .js{left:max(2%,env(safe-area-inset-left));bottom:7%;width:min(34vh,160px);pointer-events:auto}
+  #game .controls .pad{right:max(2%,env(safe-area-inset-right));bottom:7%;width:min(50vh,240px);pointer-events:auto}
+  #game .hud{position:absolute;top:4px;left:50%;transform:translateX(-50%);z-index:4;transform-origin:top center;zoom:.8}
+  #game .hint,#game #myteam{display:none}
+  #game>.row{position:absolute;top:4px;right:6px;z-index:5;display:flex;gap:4px;margin:0}
+  #game>.row .btn{padding:4px 8px;font-size:.7rem;opacity:.8}
+  #gfs{display:inline-block}
+}
 </style>
 </head>
 <body>
@@ -122,7 +138,7 @@ kbd{background:var(--panel);border:1px solid var(--mute);border-radius:5px;paddi
       <button class="rb" id="b4"><span>⚽</span><em>Şut (Boşluk)</em></button>
     </div>
   </div>
-  <div class="row"><button class="btn alt" id="gback">Lobiye dön</button><button class="btn alt" id="grole">Seyirci moduna geç</button><button class="btn alt" id="gleave">Odadan çık</button></div>
+  <div class="row"><button class="btn alt" id="gback">Lobiye dön</button><button class="btn alt" id="grole">Seyirci moduna geç</button><button class="btn alt" id="gfs">⛶ Tam ekran</button><button class="btn alt" id="gleave">Odadan çık</button></div>
   <div class="hint"><kbd>W A S D</kbd> veya oklar: hareket · <kbd>Boşluk</kbd>: şut · <kbd>3</kbd>: pas (basılı tut = aşırtma) · <kbd>1</kbd>: topa atıl ve tut · <kbd>2</kbd>: ileri atıl · Gol yiyen takım orta sahadan başlar, karşı takım 3 sn çizgiyi geçemez. Mobilde sol joystick ve sağdaki butonlar.</div>
 </div>
 
@@ -366,6 +382,10 @@ bind('b3',()=>{btn.p3=true;sendIn(true);},()=>{btn.p3=false;sendIn(true);});
 bind('b4',()=>{btn.sp=true;sendIn(true);},()=>{btn.sp=false;sendIn(true);});
 addEventListener('contextmenu',e=>{if(e.target.closest&&e.target.closest('.ctl'))e.preventDefault();});
 nickIn.addEventListener('keydown',e=>{if(e.key==='Enter')$('create').click();});
+
+$('gfs').onclick=()=>{try{const d=document.documentElement;if(document.fullscreenElement){document.exitFullscreen();}else{(d.requestFullscreen||d.webkitRequestFullscreen).call(d);}const so=window.screen&&window.screen.orientation;if(so&&so.lock)so.lock('landscape').catch(()=>{});}catch(e){}};
+document.addEventListener('gesturestart',e=>e.preventDefault());
+document.addEventListener('touchmove',e=>{if(e.target.closest&&e.target.closest('#game'))e.preventDefault();},{passive:false});
 connect();
 </script>
 </body>
