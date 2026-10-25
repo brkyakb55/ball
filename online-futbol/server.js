@@ -98,13 +98,13 @@ function seatInGame(room, c) {
   let p = room.game.players.find(q => q.t === c.team && (!q.active || (room.bots && !q.human)));
   if (!p && room.lateJoin) p = room.game.players.find(q => !q.active);
   if (!p) return;
-  p.active = true; p.human = true; p.id = c.id; p.name = c.nick; p.inp = { x: 0, y: 0, sp: false, p3: false }; c.team = p.t; c.slot = p.slot;
+  p.active = true; p.human = true; p.id = c.id; p.name = c.nick; p.inp = { x: 0, y: 0, sp: false }; c.team = p.t; c.slot = p.slot;
 }
 function unseat(room, c) {
   if (room.game && c.slot != null) {
     const p = room.game.players[c.slot];
     if (p && p.id === c.id) {
-      p.id = null; p.inp = { x: 0, y: 0, sp: false, p3: false }; p.req = null;
+      p.id = null; p.inp = { x: 0, y: 0, sp: false }; p.req = null;
       if (room.bots) { p.active = true; p.human = false; p.name = 'Bot'; }
       else { p.active = false; p.human = false; p.name = ''; if (room.game.holder === p) room.game.holder = null; }
     }
@@ -200,7 +200,7 @@ attach(server, ws => {
         const room = c.room; if (!room || !room.game || c.slot == null) break;
         const p = room.game.players[c.slot]; if (!p || p.id !== c.id) break;
         const cl = v => { v = Number(v); return Number.isFinite(v) ? Math.max(-1, Math.min(1, v)) : 0; };
-        p.inp = { x: cl(m.x), y: cl(m.y), sp: !!m.sp, p3: !!m.p3 };
+        p.inp = { x: cl(m.x), y: cl(m.y), sp: !!m.sp };
         break;
       }
       case 'ev': {

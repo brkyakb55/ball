@@ -51,3 +51,10 @@ const SERVER_URL='wss://SENIN-SUNUCUN.onrender.com';
 ```
 
 Adres `https://` değil `wss://` ile başlamalı. Boş bırakırsan sayfa kendi açıldığı sunucuya bağlanır.
+
+
+## Top kontrolü ve şut
+
+- Şut düğmesini veya Boşluk tuşunu basılı tutarak güç biriktir; bıraktığında şut çekilir.
+- Top sende iken hareket yönünü değiştirerek oyuncunun önündeki topu döndürebilirsin.
+- `1` / Tut: topa doğru atılma ve topu kapma; `2` / Atla: ileri atılma.

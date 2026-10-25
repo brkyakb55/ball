@@ -21,7 +21,7 @@ class Game {
       const sys = ys[local] - 300;
       return { slot: i, t, name: s.name, human: !!s.human, active: s.active !== false, id: s.id || null,
       ox: xs[local], oy: ys[local], sy: sys,
-      inp: { x: 0, y: 0, sp: false, p3: false }, req: null
+      inp: { x: 0, y: 0, sp: false }, req: null
     };
     });
     this.place();
@@ -132,14 +132,6 @@ class Game {
       const pf = p.pf === undefined ? p.face : p.pf, d = Math.atan2(Math.sin(p.face - pf), Math.cos(p.face - pf));
       p.turn = (p.turn || 0) * Math.exp(-dt * 8) + d; p.pf = p.face;
     }
-    const ps = !!inp.p3, nb = this.holder === p || (!this.holder && dist(p, ball) < PR + BR + 20);
-    if (ps && !p.psp) { p.pt = 0; p.bCharge = 0; }
-    if (ps) { p.pt += dt; p.bCharge = p.pt > .12 ? Math.min(1, (p.pt - .12) / .5) : 0; }
-    else if (p.psp) {
-      if (nb) { if (p.pt < .12) this.throwBall(p, .55, false); else this.throwBall(p, .6 + .4 * (p.bCharge || 0), false, true); }
-      p.bCharge = 0;
-    }
-    p.psp = ps;
     let req = p.req;
     if (req === 'fwd' && !this.holder && p.cool > -.4 && dist(p, ball) < 330) req = 'ball';
     const cdk = req === 'ball' ? 'ecool' : 'dcool';
@@ -177,14 +169,11 @@ class Game {
     }
     if (near) { p.gt = (p.gt || 0) + dt; if (p.gt >= 0) { this.take(p); p.gt = 0; p.lg = 0; } } else p.gt = 0;
     const b = !!inp.sp;
-    if (b) {
-      if (this.holder === p || (!this.holder && dist(p, ball) < PR + BR + 24)) p.sCharge = Math.min(1, (p.sCharge || 0) + dt * 1.65);
-    } else if (p.sprev) {
+    // Şut tek basışta çıkar; güç biriktirme yok.
+    if (b && !p.sprev) {
       if (this.holder === p || (!this.holder && dist(p, ball) < PR + BR + 24)) {
-        const power = Math.max(.22, Math.min(1, .28 + (p.sCharge || 0) * .72));
-        this.throwBall(p, power, true);
+        this.throwBall(p, .78, true);
       }
-      p.sCharge = 0;
     }
     p.sprev = b;
   }
@@ -209,8 +198,8 @@ class Game {
       p.cool -= dt; p.dcool = (p.dcool || 0) - dt; p.ecool = (p.ecool || 0) - dt; p.dsh = (p.dsh || 0) - dt;
       if (p.human) this.human(p, dt); else this.ai(p, dt);
       const hp = this.holder === p;
-      const sp = (p.human ? 228 : 168) * (hp ? .94 : 1) * (p.human ? 1 - .82 * Math.min(1, Math.max(0, ((p.fa || 0) - .25) / 1.65)) : 1);
-      const k = Math.min(1, dt * ((p.human && (p.fa || 0) > .5) ? 23 : 12));
+      const sp = (p.human ? 190 : 155) * (hp ? .94 : 1) * (p.human ? 1 - .82 * Math.min(1, Math.max(0, ((p.fa || 0) - .25) / 1.65)) : 1);
+      const k = Math.min(1, dt * ((p.human && (p.fa || 0) > .5) ? 18 : 9));
       if (p.dash > 0) {
         if (p.dcv) { const th = p.dcv * dt, c = Math.cos(th), sn = Math.sin(th), ox = p.dvx; p.dvx = ox * c - p.dvy * sn; p.dvy = ox * sn + p.dvy * c; }
         p.vx = p.dvx; p.vy = p.dvy; p.dash -= dt;

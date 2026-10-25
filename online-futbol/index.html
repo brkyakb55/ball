@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+<title>GoBall — Online Futbol</title>
+<style>
+:root{--bg:#eef3e8;--ink:#14210f;--panel:#ffffff;--mute:#4d5c44;--line:#c9d6bd;--blue:#1b63e6;--red:#e2302d;--accent:#2f8f1f}
+@media (prefers-color-scheme:dark){:root{--bg:#0d140b;--ink:#eaf3de;--panel:#16210f;--mute:#9db08c;--line:#2c3d22;--accent:#7fd34a}}
+*{box-sizing:border-box}
+.brand{display:flex;align-items:center;gap:14px;padding:22px 24px;border-radius:20px;background:linear-gradient(125deg,#142b18,#2d6b2a 58%,#94cf35);color:#fff;box-shadow:0 12px 30px rgba(24,70,24,.22);overflow:hidden;position:relative}
+.brand:after{content:"";position:absolute;width:220px;height:220px;border:22px solid rgba(255,255,255,.09);border-radius:50%;right:-55px;top:-95px}
+.brandball{width:64px;height:64px;flex:0 0 64px;display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.16);border:2px solid rgba(255,255,255,.48);font-size:2.4rem;box-shadow:inset 0 0 18px rgba(255,255,255,.14)}
+.brand h1{font-size:2.4rem;letter-spacing:-.05em;margin:0;font-weight:900}.tagline{font-size:.92rem;opacity:.88;letter-spacing:.08em;text-transform:uppercase;font-weight:800;margin-top:2px}
+.hero-copy{padding:0 4px;color:var(--mute);font-size:1rem;line-height:1.5}
+#menu .card{border-radius:16px;padding:17px;box-shadow:0 5px 18px rgba(35,65,24,.055)}
+#menu .card h2{font-size:1.05rem;letter-spacing:.01em}
+#menu .btn{border-radius:10px;transition:transform .12s ease,filter .12s ease}#menu .btn:hover{filter:brightness(1.05);transform:translateY(-1px)}
+
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"Trebuchet MS","Segoe UI",Arial,sans-serif;min-height:100dvh;padding:12px;padding-top:max(12px,env(safe-area-inset-top));padding-bottom:max(12px,env(safe-area-inset-bottom))}
+.hidden{display:none!important}
+.screen{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+h1{margin:6px 0 0;font-size:1.7rem}
+h2{margin:0 0 8px;font-size:1.05rem}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+select{font:inherit;padding:10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+input[type=text]{flex:1;min-width:140px;font:inherit;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+button.btn{font:inherit;font-weight:700;padding:10px 16px;border-radius:8px;border:0;background:var(--accent);color:#08140a;cursor:pointer}
+button.btn.alt{background:transparent;border:1px solid var(--line);color:var(--ink)}
+button.btn:disabled{opacity:.5;cursor:default}
+.muted{color:var(--mute);font-size:.92rem}
+.rooms{display:flex;flex-direction:column;gap:6px}
+.room{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:8px}
+.room b{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tag{font-size:.8rem;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--mute)}
+.teams{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.team{border-radius:10px;padding:10px;border:2px solid var(--line);min-height:120px}
+.team.t0{border-color:var(--blue)}.team.t1{border-color:var(--red)}
+.team h3{margin:0 0 6px;font-size:1rem}
+.team.t0 h3{color:var(--blue)}.team.t1 h3{color:var(--red)}
+.mem{padding:4px 0;font-weight:600}
+.code{font-size:1.6rem;letter-spacing:.25em;font-weight:800}
+#toast{position:fixed;left:50%;top:14px;transform:translateX(-50%);background:#1d2b16;color:#fff;padding:10px 16px;border-radius:8px;z-index:9;max-width:90vw}
+#game{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:8px}
+.hud{display:inline-flex;border-radius:10px;overflow:hidden;font-weight:800;box-shadow:0 2px 6px rgba(0,0,0,.25)}
+.hud .s{background:var(--blue);color:#fff;padding:6px 18px;font-size:1.4rem;font-variant-numeric:tabular-nums}
+.hud .s.r{background:var(--red)}
+.hud .t{background:#fff;color:#14210f;padding:6px 20px;font-size:1.4rem;font-variant-numeric:tabular-nums}
+.wrap{position:relative;width:100%;max-width:1200px}
+canvas{width:100%;height:auto;max-height:calc(100dvh - 210px);min-height:220px;object-fit:contain;display:block;border-radius:12px;touch-action:none}
+.controls{position:relative;width:100%;max-width:1200px;height:clamp(170px,26vw,240px)}
+.ctl{position:absolute;touch-action:none;user-select:none;-webkit-user-select:none}
+.js{left:3%;bottom:5%;width:clamp(90px,17%,160px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(127,160,100,.45),rgba(127,160,100,.15));border:2px solid rgba(127,160,100,.6)}
+.kn{position:absolute;left:50%;top:50%;width:44%;height:44%;margin:-22% 0 0 -22%;border-radius:50%;background:radial-gradient(circle at 40% 35%,#f0a456,#c4651f);box-shadow:0 3px 8px rgba(0,0,0,.35);pointer-events:none}
+.pad{right:3%;bottom:5%;width:clamp(130px,23%,220px);aspect-ratio:1}
+.rb{--r:0;position:absolute;border-radius:50%;border:4px solid rgba(255,255,255,.92);background:radial-gradient(circle at 38% 30%,#6fc0ff,#1566d9 70%);color:#fff;font:bold 1rem "Trebuchet MS",sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0;touch-action:none;overflow:hidden;cursor:pointer;box-shadow:0 3px 8px rgba(0,0,0,.35)}
+.rb::after{content:"";position:absolute;inset:0;border-radius:50%;background:conic-gradient(rgba(0,0,0,.62) calc(var(--r)*360deg),transparent 0);pointer-events:none}
+.rb.on{filter:brightness(1.3)}
+.rb span{font-size:1.3rem;line-height:1}.rb em{font-style:normal;font-size:.62rem;font-weight:700}
+.rb small{position:absolute;z-index:2;font-size:1.2rem;font-weight:700;color:#fff}
+#b1{width:34%;height:34%;left:0;top:18%}
+#b2{width:34%;height:34%;right:8%;top:0;background:radial-gradient(circle at 38% 30%,#74e6cb,#0e8f7e 70%)}
+#b4{width:56%;height:56%;right:0;bottom:0}
+#b4 span{font-size:1.5rem}
+.hint{max-width:1200px;color:var(--mute);font-size:.9rem;line-height:1.5;text-align:center}
+kbd{background:var(--panel);border:1px solid var(--mute);border-radius:5px;padding:1px 7px;font-family:inherit;color:var(--ink)}
+
+html,body{overscroll-behavior:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#gfs{display:none}
+@media (orientation:landscape) and (max-height:560px){
+  #game:not(.hidden){position:fixed;inset:0;z-index:50;background:#0b1208;display:block;padding:0;margin:0;overflow:hidden}
+  #game .wrap{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:auto;max-width:none}
+  #game canvas{height:100dvh;width:auto;max-height:none;min-height:0;aspect-ratio:5/3;border-radius:0}
+  #game .controls{position:absolute;inset:0;max-width:none;width:auto;height:auto;pointer-events:none;z-index:3}
+  #game .controls .js{left:max(2%,env(safe-area-inset-left));bottom:7%;width:min(34vh,160px);pointer-events:auto}
+  #game .controls .pad{right:max(2%,env(safe-area-inset-right));bottom:7%;width:min(50vh,240px);pointer-events:auto}
+  #game .hud{position:absolute;top:4px;left:50%;transform:translateX(-50%);z-index:4;transform-origin:top center;zoom:.8}
+  #game .hint,#game #myteam{display:none}
+  #game>.row{position:absolute;top:4px;right:6px;z-index:5;display:flex;gap:4px;margin:0}
+  #game>.row .btn{padding:4px 8px;font-size:.7rem;opacity:.8}
+  #gfs{display:inline-block}
+}
+</style>
+</head>
+<body>
+<div id="toast" class="hidden"></div>
+
+<div id="menu" class="screen">
+  <div class="brand"><div class="brandball">⚽</div><div><h1>GoBall</h1><div class="tagline">Hızlı maçlar. Saf rekabet.</div></div></div>
+  <div class="hero-copy">Kendi odanı kur, arkadaşlarını çağır ve sahaya çık. Tarayıcıdan, indirmeden oyna.</div>
+  <div class="card">
+    <h2>Takma adın</h2>
+    <div class="row"><input type="text" id="nick" maxlength="14" placeholder="Nick (en fazla 14 harf)" autocomplete="off"></div>
+  </div>
+  <div class="card">
+    <h2>Oda kur</h2>
+    <div class="row"><input type="text" id="rname" maxlength="22" placeholder="Oda adı (isteğe bağlı)" autocomplete="off"></div>
+    <div class="row" style="margin-top:8px"><label for="teamSize">Maç modu</label><select id="teamSize"><option value="1">1'e 1</option><option value="2">2'ye 2</option><option value="3">3'e 3</option></select></div>
+    <div class="row" style="margin-top:8px"><label><input type="checkbox" id="bots" checked> Eksik oyuncular bot olsun</label></div>
+    <div class="row" style="margin-top:8px"><label><input type="checkbox" id="lateJoin" checked> Maç başladıktan sonra katılım</label></div>
+    <div class="row" style="margin-top:8px"><input type="text" id="rpass" maxlength="32" placeholder="Oda şifresi (isteğe bağlı)" autocomplete="new-password"><button class="btn" id="create">Oda kur</button></div>
+  </div>
+  <div class="card">
+    <h2>Kodla katıl</h2>
+    <div class="row"><input type="text" id="jcode" maxlength="4" placeholder="Oda kodu (4 harf)" autocomplete="off" style="text-transform:uppercase"><button class="btn" id="join">Oyuncu olarak katıl</button><button class="btn alt" id="watchCode">Seyirci olarak katıl</button></div>
+  </div>
+  <div class="card">
+    <h2>Açık odalar</h2>
+    <div class="rooms" id="rooms"><div class="muted">Henüz oda yok. İlk odayı sen kur.</div></div>
+  </div>
+  <div class="muted" id="conn">Bağlanıyor…</div>
+</div>
+
+<div id="lobby" class="screen hidden">
+  <h1 id="lname">Oda</h1>
+  <div class="card">
+    <div class="muted">Oda kodu</div>
+    <div class="code" id="lcode">----</div>
+    <div class="row" style="margin-top:8px"><button class="btn alt" id="copy">Davet bağlantısını kopyala</button></div>
+  </div>
+  <div class="teams">
+    <div class="team t0"><h3>Mavi takım (3)</h3><div id="m0"></div><button class="btn alt" id="to0" style="margin-top:8px">Maviye geç</button></div>
+    <div class="team t1"><h3>Kırmızı takım (3)</h3><div id="m1"></div><button class="btn alt" id="to1" style="margin-top:8px">Kırmızıya geç</button></div>
+  </div>
+  <div class="muted" id="spectators">Seyirciler: yok</div>
+  <div class="row">
+    <button class="btn" id="start">Maçı başlat</button>
+    <button class="btn alt" id="role">Seyirci moduna geç</button>
+    <button class="btn alt" id="lleave">Odadan çık</button>
+  </div>
+  <div class="muted" id="lhint"></div>
+</div>
+
+<div id="game" class="hidden">
+  <div class="hud"><span class="s" id="s0">0</span><span class="t" id="tm">2:00</span><span class="s r" id="s1">0</span></div>
+  <div class="muted" id="myteam"></div>
+  <div class="wrap"><canvas id="c" width="1000" height="600"></canvas></div>
+  <div class="controls" id="controls">
+    <div class="ctl js" id="js"><div class="kn" id="kn"></div></div>
+    <div class="ctl pad">
+      <button class="rb" id="b1"><span>1</span><em>Tut</em><small></small></button>
+      <button class="rb" id="b2"><span>2</span><em>Atla</em><small></small></button>
+      <button class="rb" id="b4"><span>⚽</span><em>Şut</em></button>
+    </div>
+  </div>
+  <div class="row"><button class="btn alt" id="gback">Lobiye dön</button><button class="btn alt" id="grole">Seyirci moduna geç</button><button class="btn alt" id="gfs">⛶ Tam ekran</button><button class="btn alt" id="gleave">Odadan çık</button></div>
+  <div class="hint"><kbd>W A S D</kbd> veya oklar: hareket · <kbd>Boşluk</kbd>/⚽: tek dokunuşla şut · <kbd>1</kbd>: topa atıl/topu kap · <kbd>2</kbd>: ileri atıl · Top sende iken yön değiştirerek topu önünde döndür. Mobilde sol joystick ve sağdaki butonlar.</div>
+</div>
+
+<script>
+// Sayfayı başka bir sitede barındırırsan sunucu adresini buraya yaz. Örnek: 'wss://online-futbol.onrender.com'
+// Boş bırakırsan sayfa, kendi açıldığı sunucuya bağlanır (Render'da olduğu gibi).
+const SERVER_URL='';
+const $=id=>document.getElementById(id);
+const W=1000,H=600,L=58,R=942,T=30,B=570,GY1=225,GY2=375,GD=52,PR=17,BR=8,CR=88;
+let ws=null,myId=null,room=null,roster=null,mySlot=-1,roomsList=[],screen='menu',autoCode=null;
+const nickIn=$('nick');
+nickIn.value=localStorage.getItem('nick')||'';
+const urlRoom=(new URLSearchParams(location.search).get('room')||'').toUpperCase().slice(0,4);
+if(urlRoom)$('jcode').value=urlRoom;
+
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.remove('hidden');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.add('hidden'),3200);}
+function show(name){screen=name;for(const id of ['menu','lobby','game'])$(id).classList.toggle('hidden',id!==name);}
+function send(o){if(ws&&ws.readyState===1)ws.send(JSON.stringify(o));}
+function getNick(){const n=nickIn.value.replace(/\s+/g,' ').trim().slice(0,14);if(n.length<2){toast('Önce en az 2 harflik bir nick yaz.');nickIn.focus();return null;}localStorage.setItem('nick',n);return n;}
+
+function connect(){
+  ws=new WebSocket(SERVER_URL||((location.protocol==='https:'?'wss://':'ws://')+location.host));
+  ws.onopen=()=>{$('conn').textContent='Bağlandı.';if(urlRoom&&!room&&localStorage.getItem('nick')&&!autoCode){autoCode=urlRoom;send({t:'join',code:urlRoom,nick:localStorage.getItem('nick'),password:prompt('Oda şifresi (şifre yoksa boş bırak):')||''});}};
+  ws.onmessage=e=>{let m;try{m=JSON.parse(e.data);}catch(x){return;}handle(m);};
+  ws.onclose=()=>{$('conn').textContent='Bağlantı koptu, yeniden deneniyor…';room=null;roster=null;if(screen!=='menu')show('menu');setTimeout(connect,1500);};
+}
+function handle(m){
+  switch(m.t){
+    case 'hi':myId=m.id;break;
+    case 'rooms':roomsList=m.list;renderRooms();break;
+    case 'room':room=m;if(m.state==='lobby'){show('lobby');renderLobby();}else{if(screen!=='game')enterGame();renderGameBar();}break;
+    case 'roster':roster=m.slots;mySlot=m.me;renderGameBar();break;
+    case 'st':onState(m);break;
+    case 'left':room=null;roster=null;snaps.length=0;show('menu');break;
+    case 'err':toast(m.msg);break;
+  }
+}
+function renderRooms(){
+  const box=$('rooms');
+  if(!roomsList.length){box.innerHTML='<div class="muted">Henüz açık oda yok. İlk odayı sen kur.</div>';return;}
+  box.innerHTML='';
+  for(const r of roomsList){
+    const d=document.createElement('div');d.className='room';
+    const b=document.createElement('b');b.textContent=r.name;
+    const t=document.createElement('span');t.className='tag';t.textContent=r.code+' · '+r.n+' kişi · '+r.teamSize+'v'+r.teamSize+(r.state==='lobby'?'':' · maçta');
+    const j=document.createElement('button');j.className='btn';j.textContent='Katıl';
+    j.onclick=()=>joinByCode(r.code,false);
+    const w=document.createElement('button');w.className='btn alt';w.textContent='İzle';w.onclick=()=>joinByCode(r.code,true);
+    d.append(b,t,j,w);box.appendChild(d);
+  }
+}
+function joinByCode(code,spectator){const n=getNick();if(!n)return;const knownPublic=roomsList.some(r=>r.code===code&&!r.private);const password=knownPublic?'':(prompt('Oda şifresi (şifre yoksa boş bırak):')||'');send({t:'join',code,nick:n,spectator,password});}
+
+function renderLobby(){
+  $('lname').textContent=room.name;$('lcode').textContent=room.code;
+  const size=room.teamSize||1;
+  for(const t of [0,1]){
+    const box=$('m'+t);box.innerHTML='';
+    const ms=room.members.filter(x=>!x.spectator&&x.team===t);
+    for(const x of ms){const d=document.createElement('div');d.className='mem';d.textContent=(x.id===room.host?'★ ':'')+x.nick+(x.id===room.me?' (sen)':'');box.appendChild(d);}
+    for(let i=ms.length;i<size;i++){const d=document.createElement('div');d.className='mem muted';d.textContent=room.bots?'Bot':'Boş yer';box.appendChild(d);}
+    box.parentElement.querySelector('h3').textContent=(t===0?'Mavi':'Kırmızı')+' takım ('+size+')';
+  }
+  const spectators=room.members.filter(x=>x.spectator);
+  $('spectators').textContent='Seyirciler: '+(spectators.length?spectators.map(x=>x.nick).join(', '):'yok');
+  const host=room.host===room.me, me=room.members.find(x=>x.id===room.me);
+  $('start').classList.toggle('hidden',!host);
+  $('role').textContent=me&&me.spectator?'Oyuncu olarak katıl':'Seyirci moduna geç';
+  $('lhint').textContent=host?'Hazır olunca maçı başlat. '+(room.bots?'Eksik yerlere bot gelir. ':'Botlar kapalı. ')+(room.lateJoin?'Maç sürerken boş yere katılım açık.':'Maç başladıktan sonra oyuncu katılımı kapalı.'):'Odanın kurucusunun (★) maçı başlatması bekleniyor.';
+}
+$('create').onclick=()=>{const n=getNick();if(n)send({t:'create',nick:n,name:$('rname').value,teamSize:Number($('teamSize').value),bots:$('bots').checked,lateJoin:$('lateJoin').checked,password:$('rpass').value});};
+$('join').onclick=()=>{const c=$('jcode').value.trim().toUpperCase();if(c.length!==4){toast('Oda kodu 4 harf olmalı.');return;}joinByCode(c,false);};
+$('watchCode').onclick=()=>{const c=$('jcode').value.trim().toUpperCase();if(c.length!==4){toast('Oda kodu 4 harf olmalı.');return;}joinByCode(c,true);};
+$('copy').onclick=async()=>{const url=location.origin+'/?room='+room.code;try{await navigator.clipboard.writeText(url);toast('Bağlantı kopyalandı.');}catch(e){toast(url);}};
+$('to0').onclick=()=>send({t:'team',team:0});$('to1').onclick=()=>send({t:'team',team:1});
+$('start').onclick=()=>send({t:'start'});
+$('role').onclick=()=>{const me=room&&room.members.find(x=>x.id===room.me);send({t:'role',spectator:!(me&&me.spectator)});};
+$('grole').onclick=()=>{const me=room&&room.members.find(x=>x.id===room.me);send({t:'role',spectator:!(me&&me.spectator)});};
+$('lleave').onclick=()=>send({t:'leave'});$('gleave').onclick=()=>send({t:'leave'});
+$('gback').onclick=()=>send({t:'lobby'});
+
+// ---------- oyun ----------
+const cv=$('c'),ctx=cv.getContext('2d');
+const snaps=[];let conf=[],trail=[],lastFrame=performance.now(),cd=[0,0],lastSt=null;
+function enterGame(){show('game');snaps.length=0;conf=[];trail=[];requestAnimationFrame(loop);}
+function renderGameBar(){
+  if(!room||screen!=='game')return;
+  const host=room.host===room.me;
+  $('gback').classList.toggle('hidden',!(host&&room.state==='over'));
+  const my=roster&&mySlot>=0?roster[mySlot]:null;
+  const member=room&&room.members.find(x=>x.id===room.me);$('myteam').textContent=my?('Takımın: '+(my.t===0?'Mavi (sağdaki kaleye at)':'Kırmızı (soldaki kaleye at)')):(member&&member.spectator?'Seyirci modu — maçı izliyorsun':'Oyuncu yeri bekleniyor');
+  $('grole').textContent=member&&member.spectator?'Oyuncu olarak katıl':'Seyirci moduna geç';
+  $('controls').classList.toggle('hidden',!my);
+}
+function onState(m){
+  snaps.push({rt:performance.now(),s:m});if(snaps.length>30)snaps.shift();
+  lastSt=m;cd=m.c||[0,0];
+  $('s0').textContent=m.s[0];$('s1').textContent=m.s[1];
+  const t=Math.max(0,Math.ceil(m.tm));$('tm').textContent=Math.floor(t/60)+':'+String(t%60).padStart(2,'0');
+  if(m.ev&&m.ev.includes('goal'))burst(m.b[0],m.b[1]);
+  for(const [id,v] of [['b1',cd[0]],['b2',cd[1]]]){const b=$(id);b.style.setProperty('--r',Math.min(1,v/3));b.querySelector('small').textContent=v>0?Math.ceil(v):'';}
+}
+function burst(x,y){for(let i=0;i<140;i++)conf.push({x,y,vx:(Math.random()-.5)*700,vy:(Math.random()-.9)*520,c:['#ffd23f','#ff5d8f','#3ec1d3','#fff','#ff7a3d'][i%5],l:1.8});}
+function lerp(a,b,k){return a+(b-a)*k;}
+function lerpAng(a,b,k){const d=Math.atan2(Math.sin(b-a),Math.cos(b-a));return a+d*k;}
+function view(){
+  if(!snaps.length)return null;
+  const target=performance.now()-110;
+  let a=snaps[0],b=snaps[snaps.length-1];
+  for(let i=snaps.length-1;i>0;i--){if(snaps[i-1].rt<=target){a=snaps[i-1];b=snaps[i];break;}}
+  if(target>=snaps[snaps.length-1].rt){a=b=snaps[snaps.length-1];}
+  const k=a===b?1:Math.max(0,Math.min(1,(target-a.rt)/(b.rt-a.rt||1)));
+  const A=a.s,Bs=b.s,tel=Math.hypot(Bs.b[0]-A.b[0],Bs.b[1]-A.b[1])>150?1:k;
+  return {
+    players:Bs.p.map((p,i)=>{if(!p)return null;const q=A.p[i]||p;const tp=Math.hypot(p[0]-q[0],p[1]-q[1])>150?1:k;return{x:lerp(q[0],p[0],tp),y:lerp(q[1],p[1],tp),face:lerpAng(q[2],p[2],k),dash:p[3],bc:p[4]};}),
+    ball:{x:lerp(A.b[0],Bs.b[0],tel),y:lerp(A.b[1],Bs.b[1],tel),z:lerp(A.b[2],Bs.b[2],k)},
+    h:Bs.h,k:Bs.k,s:Bs.s,bn:Bs.bn,ov:Bs.ov
+  };
+}
+function drawPlayer(p,i,v){
+  const info=roster?roster[i]:null;if(!info)return;
+  const me=i===mySlot,ex=Math.cos(p.face),ey=Math.sin(p.face),nx=-ey,ny=ex;
+  ctx.fillStyle='rgba(0,0,0,.25)';ctx.beginPath();ctx.ellipse(p.x+2,p.y+PR-1,PR*1.05,PR*.5,0,0,7);ctx.fill();
+  if(me){ctx.fillStyle='rgba(255,255,255,.25)';ctx.strokeStyle='rgba(255,255,255,.8)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y,PR+9,0,7);ctx.fill();ctx.stroke();}
+  const gr=ctx.createRadialGradient(p.x-4,p.y-5,2,p.x,p.y,PR);gr.addColorStop(0,'#f0bd8a');gr.addColorStop(1,'#b97a4b');
+  ctx.beginPath();ctx.arc(p.x,p.y,PR,0,7);ctx.fillStyle=gr;ctx.fill();
+  ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.face);ctx.fillStyle='#2a1a12';ctx.beginPath();ctx.arc(0,0,PR-1,Math.PI*.58,Math.PI*1.42);ctx.closePath();ctx.fill();ctx.restore();
+  for(const sg of [-1,1]){const cx=p.x+ex*4.5+nx*4.2*sg,cy=p.y+ey*4.5+ny*4.2*sg;ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(cx,cy,3.6,0,7);ctx.fill();ctx.fillStyle='#111';ctx.beginPath();ctx.arc(cx+ex*1.4,cy+ey*1.4,1.9,0,7);ctx.fill();}
+  ctx.strokeStyle='#8a3a22';ctx.lineWidth=1.4;ctx.beginPath();ctx.arc(p.x+ex*8,p.y+ey*8,3,Math.atan2(ey,ex)-1.1,Math.atan2(ey,ex)+1.1);ctx.stroke();
+  ctx.lineWidth=4;ctx.strokeStyle=info.t?'#e2302d':'#1b63e6';ctx.beginPath();ctx.arc(p.x,p.y,PR,0,7);ctx.stroke();
+  ctx.lineWidth=1.2;ctx.strokeStyle='#fff';ctx.beginPath();ctx.arc(p.x,p.y,PR+2,0,7);ctx.stroke();
+  if(v.h===i){ctx.save();ctx.shadowColor='#fff';ctx.shadowBlur=12;ctx.strokeStyle='rgba(255,255,255,.9)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y,PR+12,0,7);ctx.stroke();ctx.restore();}
+  ctx.font='bold 11px "Trebuchet MS",sans-serif';ctx.textAlign='center';
+  ctx.globalAlpha=info.human?1:.65;ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,.6)';ctx.strokeText(info.name,p.x,p.y+PR+24);ctx.fillStyle='#fff';ctx.fillText(info.name,p.x,p.y+PR+24);ctx.globalAlpha=1;
+}
+function drawPitch(){
+  for(let y=0;y<12;y++)for(let x=0;x<20;x++){ctx.fillStyle=(x+y)%2?'#91cf32':'#a2dc3d';ctx.fillRect(x*50,y*50,50,50);}ctx.fillStyle='rgba(255,255,255,.035)';for(let x=0;x<1000;x+=100)ctx.fillRect(x,0,50,600);
+  ctx.strokeStyle='rgba(255,255,255,.88)';ctx.lineWidth=2.5;
+  ctx.strokeRect(L,T,R-L,B-T);
+  ctx.beginPath();ctx.moveTo(500,T);ctx.lineTo(500,B);ctx.stroke();
+  ctx.beginPath();ctx.arc(500,300,CR,0,7);ctx.stroke();
+  ctx.strokeRect(L,150,120,300);ctx.strokeRect(R-120,150,120,300);
+  ctx.strokeRect(L,215,45,170);ctx.strokeRect(R-45,215,45,170);
+  ctx.beginPath();ctx.arc(L+85,300,48,-.95,.95);ctx.stroke();
+  ctx.beginPath();ctx.arc(R-85,300,48,Math.PI-.95,Math.PI+.95);ctx.stroke();
+  ctx.fillStyle='#fff';for(const [x,y] of [[500,300],[L+85,300],[R-85,300]]){ctx.beginPath();ctx.arc(x,y,3,0,7);ctx.fill();}
+  for(const s of [-1,1]){
+    const x=s<0?L-GD:R,w=GD;
+    ctx.fillStyle='rgba(255,255,255,.14)';ctx.fillRect(x,GY1,w,GY2-GY1);
+    ctx.strokeStyle='rgba(255,255,255,.6)';ctx.lineWidth=1;
+    for(let i=0;i<=w;i+=8){ctx.beginPath();ctx.moveTo(x+i,GY1);ctx.lineTo(x+i,GY2);ctx.stroke();}
+    for(let j=GY1;j<=GY2;j+=8){ctx.beginPath();ctx.moveTo(x,j);ctx.lineTo(x+w,j);ctx.stroke();}
+    ctx.strokeStyle=s<0?'#1b63e6':'#e2302d';ctx.lineWidth=5;ctx.strokeRect(x,GY1,w,GY2-GY1);
+  }
+}
+function draw(dt){
+  ctx.clearRect(0,0,W,H);drawPitch();
+  const v=view();if(!v||!roster){return;}
+  for(const [i,p] of v.players.entries())if(p&&p.dash)trail.push({x:p.x,y:p.y,a:1});
+  for(const q of trail)q.a-=dt*4;trail=trail.filter(q=>q.a>0);
+  for(const q of trail){ctx.globalAlpha=q.a*.4;ctx.fillStyle='#bfe8ff';ctx.beginPath();ctx.arc(q.x,q.y,PR*q.a,0,7);ctx.fill();}
+  ctx.globalAlpha=1;
+  if(v.k&&!v.ov){
+    const pu=.6+.4*Math.sin(performance.now()/90),team=v.k[0];ctx.save();
+    ctx.fillStyle='rgba(255,60,50,'+(.14*pu)+')';ctx.fillRect(team===0?L:500,T,team===0?500-L:R-500,B-T);
+    ctx.strokeStyle='rgba(255,230,80,'+pu+')';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(500,T);ctx.lineTo(500,300-CR);ctx.moveTo(500,300+CR);ctx.lineTo(500,B);ctx.stroke();ctx.beginPath();ctx.arc(500,300,CR,0,7);ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.9)';ctx.font='bold 38px "Trebuchet MS",sans-serif';ctx.textAlign='center';ctx.fillText(Math.ceil(v.k[1]),500,T+46);ctx.restore();
+  }
+  const me=mySlot>=0?v.players[mySlot]:null;
+  if(me&&!v.ov&&v.h===mySlot){
+    ctx.strokeStyle='rgba(255,255,255,.8)';ctx.lineWidth=3;ctx.setLineDash([6,8]);
+    ctx.beginPath();ctx.moveTo(me.x,me.y);ctx.lineTo(me.x+Math.cos(me.face)*120,me.y+Math.sin(me.face)*120);ctx.stroke();ctx.setLineDash([]);
+  }
+  if(me&&!v.ov&&me.bc>0){ctx.fillStyle='rgba(0,0,0,.45)';ctx.fillRect(me.x-24,me.y+PR+30,48,6);ctx.fillStyle='#ff7a3d';ctx.fillRect(me.x-24,me.y+PR+30,48*me.bc,6);}
+  for(const [i,p] of v.players.entries())if(p&&i!==mySlot)drawPlayer(p,i,v);
+  if(me)drawPlayer(me,mySlot,v);
+  const ball=v.ball;
+  ctx.fillStyle='rgba(0,0,0,.25)';ctx.beginPath();ctx.ellipse(ball.x,ball.y+BR-2,BR*(1+ball.z/150),BR*.45*(1+ball.z/150),0,0,7);ctx.fill();
+  ctx.save();const zs=1+ball.z/200;ctx.translate(ball.x,ball.y-ball.z*.3);ctx.scale(zs,zs);ctx.translate(-ball.x,-ball.y);
+  ctx.beginPath();ctx.arc(ball.x,ball.y,BR,0,7);ctx.fillStyle='#fff';ctx.fill();ctx.lineWidth=1.6;ctx.strokeStyle='#222';ctx.stroke();
+  const ra=(ball.x+ball.y)/7;ctx.fillStyle='#222';ctx.beginPath();ctx.arc(ball.x,ball.y,2.4,0,7);ctx.fill();
+  for(let i=0;i<5;i++){const a=ra+i*1.2566;ctx.beginPath();ctx.arc(ball.x+Math.cos(a)*6,ball.y+Math.sin(a)*6,1.4,0,7);ctx.fill();}
+  ctx.restore();
+  for(const c of conf){c.vy+=600*dt;c.x+=c.vx*dt;c.y+=c.vy*dt;c.l-=dt;ctx.globalAlpha=Math.max(0,Math.min(1,c.l));ctx.fillStyle=c.c;ctx.fillRect(c.x,c.y,6,4);}
+  ctx.globalAlpha=1;conf=conf.filter(c=>c.l>0);
+  if(v.bn||v.ov){
+    ctx.fillStyle='rgba(8,14,6,.6)';ctx.fillRect(0,230,W,140);
+    ctx.fillStyle='#fff';ctx.textAlign='center';ctx.font='bold 54px "Trebuchet MS",sans-serif';
+    let title=v.bn;
+    if(v.ov){const t=roster[mySlot]?roster[mySlot].t:0,a=v.s[t],b=v.s[1-t];title=a>b?'Kazandınız!':a<b?'Kaybettiniz':'Berabere';}
+    ctx.fillText(title,W/2,305);
+    ctx.font='20px "Trebuchet MS",sans-serif';
+    ctx.fillText(v.s[0]+' - '+v.s[1]+(v.ov?' · Birazdan lobiye dönülür':''),W/2,342);
+  }
+}
+function loop(n){
+  if(screen!=='game')return;
+  const dt=Math.min(.05,(n-lastFrame)/1000);lastFrame=n;
+  draw(dt);
+  if(!stickActive){const kv=keyVec();kn.style.transform='translate('+kv.x*js.clientWidth*.26+'px,'+kv.y*js.clientWidth*.26+'px)';}
+  requestAnimationFrame(loop);
+}
+
+// ---------- girdi ----------
+const keys={},stick={x:0,y:0},js=$('js'),kn=$('kn');let jid=null,stickActive=false,btn={sp:false},lastIn='',lastInT=0;
+function keyVec(){
+  let x=(keys.KeyD||keys.ArrowRight?1:0)-(keys.KeyA||keys.ArrowLeft?1:0)+stick.x;
+  let y=(keys.KeyS||keys.ArrowDown?1:0)-(keys.KeyW||keys.ArrowUp?1:0)+stick.y;
+  const m=Math.hypot(x,y);if(m>1){x/=m;y/=m;}return{x,y};
+}
+function sendIn(force){
+  if(screen!=='game')return;
+  const v=keyVec(),o={t:'in',x:+v.x.toFixed(2),y:+v.y.toFixed(2),sp:!!(keys.Space||btn.sp)};
+  const s=JSON.stringify(o),now=performance.now();
+  if(force||s!==lastIn||now-lastInT>250){lastIn=s;lastInT=now;send(o);}
+}
+setInterval(()=>sendIn(false),50);
+function fl(id){const b=$(id);b.classList.add('on');setTimeout(()=>b.classList.remove('on'),150);}
+addEventListener('keydown',e=>{
+  if(screen!=='game'||(document.activeElement&&document.activeElement.tagName==='INPUT'))return;
+  if(['Space','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();
+  keys[e.code]=true;
+  if(!e.repeat){
+    if(e.code==='Digit2'||e.code==='Numpad2'){send({t:'ev',k:'fwd'});fl('b2');}
+    else if(e.code==='Digit1'||e.code==='Numpad1'){send({t:'ev',k:'ball'});fl('b1');}
+    if(e.code==='Space')$('b4').classList.add('on');
+  }
+  sendIn(true);
+});
+addEventListener('keyup',e=>{keys[e.code]=false;if(e.code==='Space')$('b4').classList.remove('on');sendIn(true);});
+addEventListener('blur',()=>{for(const k in keys)keys[k]=false;sendIn(true);});
+function jmove(e){const r=js.getBoundingClientRect(),R0=r.width/2;const dx=e.clientX-(r.left+R0),dy=e.clientY-(r.top+R0);const d=Math.hypot(dx,dy),m=Math.min(d,R0*.6);const nx=d?dx/d:0,ny=d?dy/d:0;kn.style.transform='translate('+nx*m+'px,'+ny*m+'px)';const mag=Math.min(1,d/(R0*.6));if(mag<.2){stick.x=stick.y=0;}else{stick.x=nx*mag;stick.y=ny*mag;}sendIn(false);}
+js.addEventListener('pointerdown',e=>{e.preventDefault();jid=e.pointerId;stickActive=true;js.setPointerCapture(jid);jmove(e);});
+js.addEventListener('pointermove',e=>{if(e.pointerId===jid)jmove(e);});
+const jend=e=>{if(e.pointerId===jid){jid=null;stickActive=false;stick.x=stick.y=0;kn.style.transform='';sendIn(true);}};
+js.addEventListener('pointerup',jend);js.addEventListener('pointercancel',jend);
+function bind(id,down,up){const b=$(id);b.addEventListener('pointerdown',e=>{e.preventDefault();b.setPointerCapture(e.pointerId);b.classList.add('on');down();});const u=()=>{b.classList.remove('on');if(up)up();};b.addEventListener('pointerup',u);b.addEventListener('pointercancel',u);}
+bind('b1',()=>send({t:'ev',k:'ball'}));bind('b2',()=>send({t:'ev',k:'fwd'}));
+bind('b4',()=>{btn.sp=true;sendIn(true);},()=>{btn.sp=false;sendIn(true);});
+addEventListener('contextmenu',e=>{if(e.target.closest&&e.target.closest('.ctl'))e.preventDefault();});
+nickIn.addEventListener('keydown',e=>{if(e.key==='Enter')$('create').click();});
+
+$('gfs').onclick=()=>{try{const d=document.documentElement;if(document.fullscreenElement){document.exitFullscreen();}else{(d.requestFullscreen||d.webkitRequestFullscreen).call(d);}const so=window.screen&&window.screen.orientation;if(so&&so.lock)so.lock('landscape').catch(()=>{});}catch(e){}};
+document.addEventListener('gesturestart',e=>e.preventDefault());
+document.addEventListener('touchmove',e=>{if(e.target.closest&&e.target.closest('#game'))e.preventDefault();},{passive:false});
+connect();
+</script>
+</body>
+</html>
