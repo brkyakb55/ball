@@ -21,7 +21,7 @@ class Game {
       const sys = ys[local] - 300;
       return { slot: i, t, name: s.name, human: !!s.human, active: s.active !== false, id: s.id || null,
       ox: xs[local], oy: ys[local], sy: sys,
-      inp: { x: 0, y: 0, sp: false }, req: null
+      inp: { x: 0, y: 0, sp: false, p3: false }, req: null
     };
     });
     this.place();
@@ -32,7 +32,7 @@ class Game {
       Object.assign(p, {
         x: p.ox, y: p.oy, vx: 0, vy: 0, face: p.t ? Math.PI : 0, cool: 0, charge: 0, hold: 0,
         dcool: 0, ecool: 0, dsh: 0, dash: 0, lunge: false, lg: 0, gt: 0, av: 0, fa: 0, turn: 0,
-        pf: undefined, bCharge: 0, sCharge: 0, pt: 0, psp: false, sprev: false, dcv: 0, ba: undefined, mx: 0, my: 0
+        pf: undefined, bCharge: 0, pt: 0, psp: false, sprev: false, dcv: 0, ba: undefined, mx: 0, my: 0
       });
       p.req = null;
     }
@@ -132,6 +132,14 @@ class Game {
       const pf = p.pf === undefined ? p.face : p.pf, d = Math.atan2(Math.sin(p.face - pf), Math.cos(p.face - pf));
       p.turn = (p.turn || 0) * Math.exp(-dt * 8) + d; p.pf = p.face;
     }
+    const ps = !!inp.p3, nb = this.holder === p || (!this.holder && dist(p, ball) < PR + BR + 16);
+    if (ps && !p.psp) { p.pt = 0; p.bCharge = 0; }
+    if (ps) { p.pt += dt; p.bCharge = p.pt > .12 ? Math.min(1, (p.pt - .12) / .5) : 0; }
+    else if (p.psp) {
+      if (nb) { if (p.pt < .12) this.throwBall(p, .55, false); else this.throwBall(p, .6 + .4 * (p.bCharge || 0), false, true); }
+      p.bCharge = 0;
+    }
+    p.psp = ps;
     let req = p.req;
     if (req === 'fwd' && !this.holder && p.cool > -.4 && dist(p, ball) < 330) req = 'ball';
     const cdk = req === 'ball' ? 'ecool' : 'dcool';
@@ -169,12 +177,7 @@ class Game {
     }
     if (near) { p.gt = (p.gt || 0) + dt; if (p.gt >= 0) { this.take(p); p.gt = 0; p.lg = 0; } } else p.gt = 0;
     const b = !!inp.sp;
-    // Şut tek basışta çıkar; güç biriktirme yok.
-    if (b && !p.sprev) {
-      if (this.holder === p || (!this.holder && dist(p, ball) < PR + BR + 24)) {
-        this.throwBall(p, .78, true);
-      }
-    }
+    if (b && !p.sprev && (this.holder === p || (!this.holder && dist(p, ball) < PR + BR + 22))) this.throwBall(p, 1.0, true);
     p.sprev = b;
   }
 
@@ -198,8 +201,8 @@ class Game {
       p.cool -= dt; p.dcool = (p.dcool || 0) - dt; p.ecool = (p.ecool || 0) - dt; p.dsh = (p.dsh || 0) - dt;
       if (p.human) this.human(p, dt); else this.ai(p, dt);
       const hp = this.holder === p;
-      const sp = (p.human ? 190 : 155) * (hp ? .94 : 1) * (p.human ? 1 - .82 * Math.min(1, Math.max(0, ((p.fa || 0) - .25) / 1.65)) : 1);
-      const k = Math.min(1, dt * ((p.human && (p.fa || 0) > .5) ? 18 : 9));
+      const sp = (p.human ? 205 : 160) * (hp ? .93 : 1) * (p.human ? 1 - .9 * Math.min(1, Math.max(0, ((p.fa || 0) - .25) / 1.5)) : 1);
+      const k = Math.min(1, dt * ((p.human && (p.fa || 0) > .5) ? 20 : 10));
       if (p.dash > 0) {
         if (p.dcv) { const th = p.dcv * dt, c = Math.cos(th), sn = Math.sin(th), ox = p.dvx; p.dvx = ox * c - p.dvy * sn; p.dvy = ox * sn + p.dvy * c; }
         p.vx = p.dvx; p.vy = p.dvy; p.dash -= dt;
@@ -261,7 +264,7 @@ class Game {
       k: k.on ? [k.team, Math.round(k.t * 100) / 100] : 0,
       b: [r1(b.x), r1(b.y), r1(b.z || 0)],
       h: this.holder ? this.players.indexOf(this.holder) : -1,
-      p: this.players.map(p => p.active ? [r1(p.x), r1(p.y), Math.round(p.face * 1000) / 1000, p.dash > 0 ? 1 : 0, Math.round(Math.max(p.bCharge || 0, p.sCharge || 0) * 100) / 100] : null),
+      p: this.players.map(p => p.active ? [r1(p.x), r1(p.y), Math.round(p.face * 1000) / 1000, p.dash > 0 ? 1 : 0, Math.round((p.bCharge || 0) * 100) / 100] : null),
       ev: this.events
     };
   }
