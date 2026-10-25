@@ -29,11 +29,12 @@ Not: Render'ın ücretsiz planı 15 dakika kullanılmayınca uyur, ilk giriş 30
 ## Nasıl oynanır
 
 - Nick yaz; 1v1, 2v2 veya 3v3 seç. İstersen botları kapat, maç başladıktan sonra katılımı kapat veya oda şifresi belirle.
-- Odayı kuran (★) maçı başlatır. Botlar açıksa boş yerlere bot gelir. Botlar kapalıysa maçın başlaması için iki takımda da en az bir gerçek oyuncu gerekir.
+- Odayı kuran (★) maçı başlatır. Botlar açıksa boş yerlere bot gelir. Botlar kapalıysa maçın başlaması için odada en az bir gerçek oyuncu olması yeterli.
 - Oda koduyla oyuncu olarak ya da seyirci olarak katılabilirsin. Maç sırasında katılım açıksa oyuncular botların veya boş slotların yerine girebilir. Seyirciler maçı izleyebilir ve odadaki rol düğmesiyle oyuncu olmaya çalışabilir.
 - Şifreli odalar açık oda listesinde görünmez; kod ve şifre gerekir.
+- Maç başında ve her golden sonra 3, 2, 1 geri sayımı olur. Bu 3 saniye maç süresinden düşmez ve geri sayım bitene kadar iki takım da orta çizgiyi geçemez.
 - Maç bitince 12 saniye sonra herkes lobiye döner (kurucu "Lobiye dön" ile hemen de döndürebilir).
-- Kontroller: WASD/oklar hareket, Boşluk şut, 3 pas (basılı tut = aşırtma), 1 topa atıl ve tut, 2 ileri atıl. Mobilde ekrandaki joystick ve butonlar.
+- Kontroller: WASD/oklar hareket, Boşluk şut, 3 pas, 1 topa atıl ve tut, 2 ileri atıl. Mobilde ekrandaki joystick ve butonlar.
 
 ## Dosyalar
 

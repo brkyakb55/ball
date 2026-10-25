@@ -3,36 +3,110 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
-<title>Tut &amp; Fırlat Online</title>
+<title>Online Futbol Arena</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Chakra+Petch:wght@600;700&display=swap">
 <style>
-:root{--bg:#eef3e8;--ink:#14210f;--panel:#ffffff;--mute:#4d5c44;--line:#c9d6bd;--blue:#1b63e6;--red:#e2302d;--accent:#2f8f1f}
-@media (prefers-color-scheme:dark){:root{--bg:#0d140b;--ink:#eaf3de;--panel:#16210f;--mute:#9db08c;--line:#2c3d22;--accent:#7fd34a}}
+:root{--bg:#08170d;--ink:#f1f5ea;--panel:#102a19;--mute:#9db8a3;--line:#2a4a35;--blue:#2f78ff;--red:#ef3b36;--accent:#ffd23f;--gold:#ffd23f;--pitch:#0d2a17;--font-d:"Chakra Petch","Trebuchet MS","Segoe UI",sans-serif;--font-b:"Barlow","Segoe UI",Arial,sans-serif;color-scheme:dark}
 *{box-sizing:border-box}
 html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font-family:"Trebuchet MS","Segoe UI",Arial,sans-serif;min-height:100dvh;padding:12px;padding-top:max(12px,env(safe-area-inset-top));padding-bottom:max(12px,env(safe-area-inset-bottom))}
+body{background-color:#08170d;background-image:radial-gradient(900px 420px at 50% -8%,rgba(255,255,255,.13),transparent 62%),repeating-linear-gradient(90deg,#0c2515 0 72px,#0a2012 72px 144px);color:var(--ink);font-family:var(--font-b);min-height:100dvh;padding:12px;padding-top:max(12px,env(safe-area-inset-top));padding-bottom:max(12px,env(safe-area-inset-bottom));padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right))}
 .hidden{display:none!important}
-.screen{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
-h1{margin:6px 0 0;font-size:1.7rem}
-h2{margin:0 0 8px;font-size:1.05rem}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+
+/* ---------- menü ve lobi ---------- */
+.screen{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:16px;position:relative}
+.hero{position:relative;text-align:center;padding:30px 8px 10px;isolation:isolate}
+.hero::before,.hero::after{content:"";position:absolute;top:0;bottom:-6px;width:34%;z-index:-1;opacity:.9}
+.hero::before{left:-14px;background:linear-gradient(120deg,var(--blue) 0 46%,transparent 46.2%);clip-path:polygon(0 0,100% 0,62% 100%,0 100%);opacity:.55}
+.hero::after{right:-14px;background:var(--red);clip-path:polygon(38% 0,100% 0,100% 100%,0 100%);opacity:.55}
+.hero svg.pitch{position:absolute;left:50%;top:50%;width:min(520px,92%);transform:translate(-50%,-50%);z-index:-1;opacity:.18}
+.kicker{font-family:var(--font-d);font-weight:600;font-size:.78rem;letter-spacing:.32em;text-transform:uppercase;color:var(--gold)}
+.hero h1{font-family:var(--font-d);font-weight:700;font-size:clamp(2.4rem,9vw,4.6rem);line-height:.95;margin:10px 0 12px;letter-spacing:.02em;text-transform:uppercase;text-wrap:balance;text-shadow:0 4px 0 rgba(0,0,0,.35)}
+.hero h1 .amp{color:var(--gold);display:inline-block;transform:translateY(-.04em)}
+.hero h1 .ball{display:inline-block;width:.8em;height:.8em;vertical-align:-.08em;margin:0 .05em}
+.sub{max-width:520px;margin:0 auto;color:#d3e6d8;font-size:1.05rem;line-height:1.45;text-wrap:balance}
+.modes{display:flex;justify-content:center;gap:8px;margin-top:14px;flex-wrap:wrap}
+.chip{font-family:var(--font-d);font-weight:600;font-size:.82rem;letter-spacing:.08em;padding:5px 12px;border:1.5px solid rgba(255,255,255,.35);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);background:rgba(0,0,0,.25)}
+.grid{display:grid;gap:16px;grid-template-columns:1fr}
+@media (min-width:880px){.grid{grid-template-columns:1.05fr .95fr;align-items:start}}
+.col{display:flex;flex-direction:column;gap:16px;min-width:0}
+.card{position:relative;background:linear-gradient(180deg,rgba(18,52,32,.92),rgba(11,36,21,.94));border:1.5px solid var(--line);padding:16px 16px 18px;clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px));box-shadow:0 10px 30px rgba(0,0,0,.35)}
+.card h2{font-family:var(--font-d);font-weight:700;font-size:1.02rem;letter-spacing:.14em;text-transform:uppercase;margin:0 0 12px;display:flex;align-items:center;gap:10px}
+.card h2::before{content:"";width:6px;height:1.05em;background:var(--gold);transform:skewX(-14deg);flex:none}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-select{font:inherit;padding:10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
-input[type=text]{flex:1;min-width:140px;font:inherit;padding:10px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
-button.btn{font:inherit;font-weight:700;padding:10px 16px;border-radius:8px;border:0;background:var(--accent);color:#08140a;cursor:pointer}
-button.btn.alt{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.field>label,.lbl{font-size:.74rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+input[type=text]{flex:1;min-width:0;width:100%;font:inherit;font-size:1.05rem;padding:12px 14px;border:1.5px solid var(--line);background:rgba(0,0,0,.28);color:var(--ink);outline:0;transition:border-color .15s,background .15s}
+input[type=text]::placeholder{color:#6f8f78}
+input[type=text]:focus{border-color:var(--gold);background:rgba(0,0,0,.4)}
+.nickrow{display:flex;gap:8px}
+.nickrow input{flex:1}
+#jcode{font-family:var(--font-d);font-weight:700;font-size:1.6rem;letter-spacing:.5em;text-align:center;text-transform:uppercase;padding:10px 8px 10px 20px}
+button.btn{font-family:var(--font-d);font-weight:700;font-size:.95rem;letter-spacing:.08em;text-transform:uppercase;padding:12px 18px;border:0;background:var(--gold);color:#1a1500;cursor:pointer;clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);transition:transform .12s,filter .12s}
+button.btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+button.btn:active{transform:translateY(1px)}
+button.btn:focus-visible{outline:2px solid #fff;outline-offset:2px}
+button.btn.alt{background:rgba(255,255,255,.08);color:var(--ink);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.3)}
+button.btn.alt:hover{background:rgba(255,255,255,.16)}
+button.btn.big{font-size:1.15rem;padding:15px 22px;width:100%}
+button.btn.dice{padding:0 14px;font-size:1.1rem}
 button.btn:disabled{opacity:.5;cursor:default}
+select{display:none}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.seg button{font-family:var(--font-d);font-weight:700;font-size:1.25rem;padding:10px 4px 8px;border:1.5px solid var(--line);background:rgba(0,0,0,.25);color:var(--mute);cursor:pointer;clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);display:flex;flex-direction:column;align-items:center;gap:2px;transition:background .15s,color .15s}
+.seg button small{font-family:var(--font-b);font-weight:500;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;opacity:.8}
+.seg button .dots{display:flex;gap:3px;height:9px;align-items:center}
+.seg button .dots i{width:7px;height:7px;border-radius:50%;background:var(--blue)}
+.seg button .dots i.r{background:var(--red)}
+.seg button[aria-checked=true]{background:var(--gold);color:#1a1500;border-color:var(--gold)}
+.seg button[aria-checked=true] .dots i{box-shadow:0 0 0 1.5px #1a1500 inset;background:#fff}
+.seg button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.sw{display:flex;align-items:center;gap:12px;padding:9px 0;cursor:pointer;font-size:1rem;border-top:1px solid rgba(255,255,255,.07)}
+.sw:first-of-type{border-top:0}
+.sw input{position:absolute;opacity:0;pointer-events:none}
+.sw .trk{flex:none;width:44px;height:24px;border-radius:99px;background:rgba(0,0,0,.45);box-shadow:inset 0 0 0 1.5px var(--line);position:relative;transition:background .15s}
+.sw .trk::after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#9db8a3;transition:transform .15s,background .15s}
+.sw input:checked+.trk{background:#2c6b3d}
+.sw input:checked+.trk::after{transform:translateX(20px);background:var(--gold)}
+.sw input:focus-visible+.trk{outline:2px solid #fff;outline-offset:2px}
+.hintline{font-size:.86rem;color:var(--mute);margin-top:10px;line-height:1.4}
 .muted{color:var(--mute);font-size:.92rem}
-.rooms{display:flex;flex-direction:column;gap:6px}
-.room{display:flex;align-items:center;gap:10px;padding:8px 10px;border:1px solid var(--line);border-radius:8px}
-.room b{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.tag{font-size:.8rem;padding:2px 8px;border-radius:99px;border:1px solid var(--line);color:var(--mute)}
-.teams{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.team{border-radius:10px;padding:10px;border:2px solid var(--line);min-height:120px}
+.rooms{display:flex;flex-direction:column;gap:8px}
+.room{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid var(--line);background:rgba(0,0,0,.22);flex-wrap:wrap}
+.room b{flex:1 1 120px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:var(--font-d);font-size:1rem;letter-spacing:.03em}
+.room .btn{padding:8px 14px;font-size:.8rem}
+.tag{font-size:.78rem;padding:3px 9px;border:1px solid var(--line);color:var(--mute);letter-spacing:.04em;white-space:nowrap}
+.empty{padding:18px 8px;text-align:center;color:var(--mute);border:1.5px dashed var(--line);font-size:.95rem}
+.status{display:flex;align-items:center;justify-content:center;gap:8px;font-size:.85rem;color:var(--mute)}
+.status::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 3px rgba(255,210,63,.2)}
+.status.ok::before{background:#58e07a;box-shadow:0 0 0 3px rgba(88,224,122,.22)}
+/* lobi */
+.ticket{display:flex;align-items:stretch;gap:0;background:linear-gradient(180deg,rgba(18,52,32,.95),rgba(11,36,21,.96));border:1.5px solid var(--line);box-shadow:0 10px 30px rgba(0,0,0,.35);clip-path:polygon(0 0,100% 0,100% 100%,0 100%)}
+.ticket .info{flex:1;padding:16px;min-width:0}
+.ticket h1{font-family:var(--font-d);font-weight:700;font-size:clamp(1.5rem,5vw,2.3rem);margin:4px 0 0;text-transform:uppercase;letter-spacing:.03em;overflow-wrap:anywhere}
+.ticket .stub{flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:14px 18px;border-left:2px dashed rgba(255,255,255,.28);background:rgba(0,0,0,.2);min-width:150px}
+.code{font-family:var(--font-d);font-weight:700;font-size:2rem;letter-spacing:.22em;padding-left:.22em;color:var(--gold);line-height:1}
+.teams{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:stretch}
+.vs{align-self:center;font-family:var(--font-d);font-weight:700;font-size:1.3rem;color:var(--gold);letter-spacing:.1em}
+.team{background:rgba(0,0,0,.22);border:1.5px solid var(--line);display:flex;flex-direction:column;min-width:0}
+.team h3{margin:0;padding:10px 12px;font-family:var(--font-d);font-weight:700;font-size:1rem;letter-spacing:.14em;text-transform:uppercase;color:#fff}
+.team.t0 h3{background:linear-gradient(90deg,var(--blue),#1d4fb8)}
+.team.t1 h3{background:linear-gradient(90deg,#b92622,var(--red))}
 .team.t0{border-color:var(--blue)}.team.t1{border-color:var(--red)}
-.team h3{margin:0 0 6px;font-size:1rem}
-.team.t0 h3{color:var(--blue)}.team.t1 h3{color:var(--red)}
-.mem{padding:4px 0;font-weight:600}
-.code{font-size:1.6rem;letter-spacing:.25em;font-weight:800}
+.team>div:nth-child(2){padding:8px 10px;display:flex;flex-direction:column;gap:6px;flex:1}
+.team>.btn{margin:0 10px 10px;align-self:stretch}
+.mem{display:flex;align-items:center;gap:10px;padding:7px 8px;background:rgba(255,255,255,.06);font-weight:600;min-width:0}
+.mem .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mem .av{flex:none;width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-family:var(--font-d);font-weight:700;font-size:.9rem;color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,.85)}
+.t0 .mem .av{background:var(--blue)}.t1 .mem .av{background:var(--red)}
+.mem .me{margin-left:auto;font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:#1a1500;background:var(--gold);padding:2px 7px;flex:none}
+.mem.muted{background:transparent;border:1.5px dashed var(--line);color:var(--mute);font-weight:500}
+.mem.muted .av{background:transparent;box-shadow:0 0 0 1.5px var(--line);color:var(--mute)}
+.mem .crown{color:var(--gold);flex:none;font-size:.95rem}
+.actions{display:grid;gap:10px;grid-template-columns:1fr}
+@media (min-width:600px){.actions{grid-template-columns:2fr 1fr 1fr}}
+@media (max-width:560px){.ticket{flex-direction:column}.ticket .stub{border-left:0;border-top:2px dashed rgba(255,255,255,.28);flex-direction:row;justify-content:space-between}.teams{grid-template-columns:1fr}.vs{justify-self:center}}
+
 #toast{position:fixed;left:50%;top:14px;transform:translateX(-50%);background:#1d2b16;color:#fff;padding:10px 16px;border-radius:8px;z-index:9;max-width:90vw}
 #game{max-width:1000px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:8px}
 .hud{display:inline-flex;border-radius:10px;overflow:hidden;font-weight:800;box-shadow:0 2px 6px rgba(0,0,0,.25)}
@@ -61,8 +135,8 @@ kbd{background:var(--panel);border:1px solid var(--mute);border-radius:5px;paddi
 
 html,body{overscroll-behavior:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 #gfs{display:none}
-@media (orientation:landscape) and (max-height:560px){
-  #game:not(.hidden){position:fixed;inset:0;z-index:50;background:#0b1208;display:block;padding:0;margin:0;overflow:hidden}
+@media (orientation:landscape){
+  #game:not(.hidden){position:fixed;inset:0;z-index:50;background:#0b1208;display:block;padding:0;margin:0;overflow:hidden;max-width:none;width:auto}
   #game .wrap{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:auto;max-width:none}
   #game canvas{height:100dvh;width:auto;max-height:none;min-height:0;aspect-ratio:5/3;border-radius:0}
   #game .controls{position:absolute;inset:0;max-width:none;width:auto;height:auto;pointer-events:none;z-index:3}
@@ -70,8 +144,21 @@ html,body{overscroll-behavior:none;-webkit-user-select:none;user-select:none;-we
   #game .controls .pad{right:max(2%,env(safe-area-inset-right));bottom:7%;width:min(50vh,240px);pointer-events:auto}
   #game .hud{position:absolute;top:4px;left:50%;transform:translateX(-50%);z-index:4;transform-origin:top center;zoom:.8}
   #game .hint,#game #myteam{display:none}
-  #game>.row{position:absolute;top:4px;right:6px;z-index:5;display:flex;gap:4px;margin:0}
-  #game>.row .btn{padding:4px 8px;font-size:.7rem;opacity:.8}
+  #game>.row{position:absolute;top:4px;right:max(6px,env(safe-area-inset-right));z-index:5;display:flex;gap:4px;margin:0;flex-direction:column;align-items:flex-end}
+  #game>.row .btn{padding:5px 9px;font-size:.62rem;letter-spacing:.04em;background:rgba(0,0,0,.55);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.35);clip-path:none;opacity:1}
+  #gfs{display:inline-block}
+}
+@media (orientation:portrait) and (max-width:700px){
+  #game:not(.hidden){position:fixed;inset:0;z-index:50;background:#0b1208;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:6px;padding:max(6px,env(safe-area-inset-top)) 0 max(8px,env(safe-area-inset-bottom));margin:0;overflow:hidden;max-width:none}
+  #game .hud{order:0;zoom:.85}
+  #game>.row{order:1;gap:4px;justify-content:center;margin:0;padding:0 6px}
+  #game>.row .btn{padding:5px 9px;font-size:.66rem;letter-spacing:.04em;background:rgba(255,255,255,.1);color:#fff;box-shadow:inset 0 0 0 1px rgba(255,255,255,.3);clip-path:none}
+  #game .wrap{order:2;max-width:none;width:100%}
+  #game canvas{width:100%;height:auto;max-height:none;min-height:0;border-radius:0}
+  #game .controls{order:3;flex:1;min-height:0;width:100%;max-width:none;height:auto}
+  #game .controls .js{left:max(5%,env(safe-area-inset-left));bottom:10%;width:min(36vw,170px)}
+  #game .controls .pad{right:max(4%,env(safe-area-inset-right));bottom:6%;width:min(50vw,250px)}
+  #game .hint,#game #myteam{display:none}
   #gfs{display:inline-block}
 }
 </style>
@@ -80,49 +167,88 @@ html,body{overscroll-behavior:none;-webkit-user-select:none;user-select:none;-we
 <div id="toast" class="hidden"></div>
 
 <div id="menu" class="screen">
-  <h1>⚽ Tut &amp; Fırlat Online</h1>
-  <div class="muted">1'e 1, 2'ye 2 veya 3'e 3 top-down futbol. Oda kur, arkadaşlarını davet et ya da maçı seyret.</div>
-  <div class="card">
-    <h2>Takma adın</h2>
-    <div class="row"><input type="text" id="nick" maxlength="14" placeholder="Nick (en fazla 14 harf)" autocomplete="off"></div>
+  <header class="hero">
+    <svg class="pitch" viewBox="0 0 400 240" fill="none" stroke="#fff" stroke-width="3" aria-hidden="true"><rect x="6" y="6" width="388" height="228"/><line x1="200" y1="6" x2="200" y2="234"/><circle cx="200" cy="120" r="46"/><rect x="6" y="66" width="52" height="108"/><rect x="342" y="66" width="52" height="108"/></svg>
+    <div class="kicker">Online · Top-down futbol</div>
+    <h1>Tut <span class="amp">&amp;</span> Fırlat</h1>
+    <p class="sub">Topu tut, rakibi geç, kaleye fırlat. Oda kur, arkadaşlarını çağır ve maça başla.</p>
+    <div class="modes"><span class="chip">1 v 1</span><span class="chip">2 v 2</span><span class="chip">3 v 3</span></div>
+  </header>
+
+  <div class="grid">
+    <div class="col">
+      <section class="card">
+        <h2>Oyuncu</h2>
+        <div class="field">
+          <label for="nick">Takma adın</label>
+          <div class="nickrow"><input type="text" id="nick" maxlength="14" placeholder="Örn. Kaptan" autocomplete="off"><button type="button" class="btn alt dice" id="dice" title="Rastgele isim" aria-label="Rastgele isim öner">Rastgele</button></div>
+        </div>
+        <div class="hintline" style="margin-top:0">En az 2 harf. Maçta oyuncuların üstünde bu isim görünür.</div>
+      </section>
+
+      <section class="card">
+        <h2>Oda kur</h2>
+        <div class="field"><label for="rname">Oda adı</label><input type="text" id="rname" maxlength="22" placeholder="İsteğe bağlı" autocomplete="off"></div>
+        <div class="field">
+          <span class="lbl" id="modeLbl">Maç modu</span>
+          <select id="teamSize"><option value="1">1'e 1</option><option value="2" selected>2'ye 2</option><option value="3">3'e 3</option></select>
+          <div class="seg" id="modeSeg" role="radiogroup" aria-labelledby="modeLbl">
+            <button type="button" role="radio" data-v="1" aria-checked="false">1 v 1<span class="dots"><i></i><i class="r"></i></span></button>
+            <button type="button" role="radio" data-v="2" aria-checked="true">2 v 2<span class="dots"><i></i><i></i><i class="r"></i><i class="r"></i></span></button>
+            <button type="button" role="radio" data-v="3" aria-checked="false">3 v 3<span class="dots"><i></i><i></i><i></i><i class="r"></i><i class="r"></i><i class="r"></i></span></button>
+          </div>
+        </div>
+        <div>
+          <label class="sw"><input type="checkbox" id="bots" checked><span class="trk"></span><span>Eksik oyuncular bot olsun</span></label>
+          <label class="sw"><input type="checkbox" id="lateJoin" checked><span class="trk"></span><span>Maç başladıktan sonra katılım açık</span></label>
+        </div>
+        <div class="field" style="margin-top:12px"><label for="rpass">Oda şifresi</label><input type="text" id="rpass" maxlength="32" placeholder="İsteğe bağlı" autocomplete="new-password"></div>
+        <button type="button" class="btn big" id="create">Odayı kur</button>
+      </section>
+    </div>
+
+    <div class="col">
+      <section class="card">
+        <h2>Kodla katıl</h2>
+        <div class="field"><label for="jcode">4 harfli oda kodu</label><input type="text" id="jcode" maxlength="4" placeholder="----" autocomplete="off"></div>
+        <div class="row"><button type="button" class="btn" id="join" style="flex:1">Oyuncu olarak gir</button><button type="button" class="btn alt" id="watchCode" style="flex:1">İzle</button></div>
+      </section>
+
+      <section class="card">
+        <h2>Açık odalar</h2>
+        <div class="rooms" id="rooms"><div class="empty">Henüz açık oda yok. İlk odayı sen kur.</div></div>
+      </section>
+    </div>
   </div>
-  <div class="card">
-    <h2>Oda kur</h2>
-    <div class="row"><input type="text" id="rname" maxlength="22" placeholder="Oda adı (isteğe bağlı)" autocomplete="off"></div>
-    <div class="row" style="margin-top:8px"><label for="teamSize">Maç modu</label><select id="teamSize"><option value="1">1'e 1</option><option value="2">2'ye 2</option><option value="3">3'e 3</option></select></div>
-    <div class="row" style="margin-top:8px"><label><input type="checkbox" id="bots" checked> Eksik oyuncular bot olsun</label></div>
-    <div class="row" style="margin-top:8px"><label><input type="checkbox" id="lateJoin" checked> Maç başladıktan sonra katılım</label></div>
-    <div class="row" style="margin-top:8px"><input type="text" id="rpass" maxlength="32" placeholder="Oda şifresi (isteğe bağlı)" autocomplete="new-password"><button class="btn" id="create">Oda kur</button></div>
-  </div>
-  <div class="card">
-    <h2>Kodla katıl</h2>
-    <div class="row"><input type="text" id="jcode" maxlength="4" placeholder="Oda kodu (4 harf)" autocomplete="off" style="text-transform:uppercase"><button class="btn" id="join">Oyuncu olarak katıl</button><button class="btn alt" id="watchCode">Seyirci olarak katıl</button></div>
-  </div>
-  <div class="card">
-    <h2>Açık odalar</h2>
-    <div class="rooms" id="rooms"><div class="muted">Henüz oda yok. İlk odayı sen kur.</div></div>
-  </div>
-  <div class="muted" id="conn">Bağlanıyor…</div>
+  <div class="status" id="conn">Bağlanıyor…</div>
 </div>
 
 <div id="lobby" class="screen hidden">
-  <h1 id="lname">Oda</h1>
-  <div class="card">
-    <div class="muted">Oda kodu</div>
-    <div class="code" id="lcode">----</div>
-    <div class="row" style="margin-top:8px"><button class="btn alt" id="copy">Davet bağlantısını kopyala</button></div>
+  <div class="ticket">
+    <div class="info">
+      <div class="kicker">Maç odası</div>
+      <h1 id="lname">Oda</h1>
+      <div class="muted" id="lmeta" style="margin-top:6px"></div>
+    </div>
+    <div class="stub">
+      <div class="lbl">Oda kodu</div>
+      <div class="code" id="lcode">----</div>
+      <button type="button" class="btn alt" id="copy" style="padding:8px 12px;font-size:.78rem">Bağlantıyı kopyala</button>
+    </div>
   </div>
+
   <div class="teams">
-    <div class="team t0"><h3>Mavi takım (3)</h3><div id="m0"></div><button class="btn alt" id="to0" style="margin-top:8px">Maviye geç</button></div>
-    <div class="team t1"><h3>Kırmızı takım (3)</h3><div id="m1"></div><button class="btn alt" id="to1" style="margin-top:8px">Kırmızıya geç</button></div>
+    <div class="team t0"><h3>Mavi takım</h3><div id="m0"></div><button type="button" class="btn alt" id="to0">Maviye geç</button></div>
+    <div class="vs">VS</div>
+    <div class="team t1"><h3>Kırmızı takım</h3><div id="m1"></div><button type="button" class="btn alt" id="to1">Kırmızıya geç</button></div>
   </div>
   <div class="muted" id="spectators">Seyirciler: yok</div>
-  <div class="row">
-    <button class="btn" id="start">Maçı başlat</button>
-    <button class="btn alt" id="role">Seyirci moduna geç</button>
-    <button class="btn alt" id="lleave">Odadan çık</button>
+  <div class="actions">
+    <button type="button" class="btn big" id="start">Maçı başlat</button>
+    <button type="button" class="btn alt" id="role">Seyirci moduna geç</button>
+    <button type="button" class="btn alt" id="lleave">Odadan çık</button>
   </div>
-  <div class="muted" id="lhint"></div>
+  <div class="hintline" id="lhint"></div>
 </div>
 
 <div id="game" class="hidden">
@@ -139,7 +265,7 @@ html,body{overscroll-behavior:none;-webkit-user-select:none;user-select:none;-we
     </div>
   </div>
   <div class="row"><button class="btn alt" id="gback">Lobiye dön</button><button class="btn alt" id="grole">Seyirci moduna geç</button><button class="btn alt" id="gfs">⛶ Tam ekran</button><button class="btn alt" id="gleave">Odadan çık</button></div>
-  <div class="hint"><kbd>W A S D</kbd> veya oklar: hareket · <kbd>Boşluk</kbd>: şut · <kbd>3</kbd>: pas (basılı tut = aşırtma) · <kbd>1</kbd>: topa atıl ve tut · <kbd>2</kbd>: ileri atıl · Gol yiyen takım orta sahadan başlar, karşı takım 3 sn çizgiyi geçemez. Mobilde sol joystick ve sağdaki butonlar.</div>
+  <div class="hint"><kbd>W A S D</kbd> veya oklar: hareket · <kbd>Boşluk</kbd>: şut · <kbd>3</kbd>: pas · <kbd>1</kbd>: topa atıl ve tut · <kbd>2</kbd>: ileri atıl · Her başlangıçta 3 saniye geri sayım olur; süre işlemez ve kimse orta çizgiyi geçemez. Mobilde sol joystick ve sağdaki butonlar.</div>
 </div>
 
 <script>
@@ -161,9 +287,9 @@ function getNick(){const n=nickIn.value.replace(/\s+/g,' ').trim().slice(0,14);i
 
 function connect(){
   ws=new WebSocket(SERVER_URL||((location.protocol==='https:'?'wss://':'ws://')+location.host));
-  ws.onopen=()=>{$('conn').textContent='Bağlandı.';if(urlRoom&&!room&&localStorage.getItem('nick')&&!autoCode){autoCode=urlRoom;send({t:'join',code:urlRoom,nick:localStorage.getItem('nick'),password:prompt('Oda şifresi (şifre yoksa boş bırak):')||''});}};
+  ws.onopen=()=>{$('conn').textContent='Sunucuya bağlandı';$('conn').classList.add('ok');if(urlRoom&&!room&&localStorage.getItem('nick')&&!autoCode){autoCode=urlRoom;send({t:'join',code:urlRoom,nick:localStorage.getItem('nick'),password:prompt('Oda şifresi (şifre yoksa boş bırak):')||''});}};
   ws.onmessage=e=>{let m;try{m=JSON.parse(e.data);}catch(x){return;}handle(m);};
-  ws.onclose=()=>{$('conn').textContent='Bağlantı koptu, yeniden deneniyor…';room=null;roster=null;if(screen!=='menu')show('menu');setTimeout(connect,1500);};
+  ws.onclose=()=>{$('conn').textContent='Bağlantı koptu, yeniden deneniyor…';$('conn').classList.remove('ok');room=null;roster=null;if(screen!=='menu')show('menu');setTimeout(connect,1500);};
 }
 function handle(m){
   switch(m.t){
@@ -178,7 +304,7 @@ function handle(m){
 }
 function renderRooms(){
   const box=$('rooms');
-  if(!roomsList.length){box.innerHTML='<div class="muted">Henüz açık oda yok. İlk odayı sen kur.</div>';return;}
+  if(!roomsList.length){box.innerHTML='<div class="empty">Henüz açık oda yok. İlk odayı sen kur.</div>';return;}
   box.innerHTML='';
   for(const r of roomsList){
     const d=document.createElement('div');d.className='room';
@@ -192,15 +318,24 @@ function renderRooms(){
 }
 function joinByCode(code,spectator){const n=getNick();if(!n)return;const knownPublic=roomsList.some(r=>r.code===code&&!r.private);const password=knownPublic?'':(prompt('Oda şifresi (şifre yoksa boş bırak):')||'');send({t:'join',code,nick:n,spectator,password});}
 
+function memRow(name,empty,host,me){
+  const d=document.createElement('div');d.className='mem'+(empty?' muted':'');
+  const av=document.createElement('span');av.className='av';av.textContent=empty?(name==='Bot'?'B':'+'):(name.trim()[0]||'?').toUpperCase();
+  const nm=document.createElement('span');nm.className='nm';nm.textContent=name;
+  d.append(av,nm);
+  if(host){const k=document.createElement('span');k.className='crown';k.title='Oda kurucusu';k.textContent='★';d.append(k);}
+  if(me){const m=document.createElement('span');m.className='me';m.textContent='Sen';d.append(m);}
+  return d;
+}
 function renderLobby(){
-  $('lname').textContent=room.name;$('lcode').textContent=room.code;
+  $('lname').textContent=room.name;$('lcode').textContent=room.code;$('lmeta').textContent=(room.teamSize||1)+' v '+(room.teamSize||1)+' · '+(room.bots?'Eksik yerlere bot gelir':'Botlar kapalı')+(room.private?' · Şifreli':'');
   const size=room.teamSize||1;
   for(const t of [0,1]){
     const box=$('m'+t);box.innerHTML='';
     const ms=room.members.filter(x=>!x.spectator&&x.team===t);
-    for(const x of ms){const d=document.createElement('div');d.className='mem';d.textContent=(x.id===room.host?'★ ':'')+x.nick+(x.id===room.me?' (sen)':'');box.appendChild(d);}
-    for(let i=ms.length;i<size;i++){const d=document.createElement('div');d.className='mem muted';d.textContent=room.bots?'Bot':'Boş yer';box.appendChild(d);}
-    box.parentElement.querySelector('h3').textContent=(t===0?'Mavi':'Kırmızı')+' takım ('+size+')';
+    for(const x of ms){box.appendChild(memRow(x.nick,false,x.id===room.host,x.id===room.me));}
+    for(let i=ms.length;i<size;i++){box.appendChild(memRow(room.bots?'Bot':'Boş yer',true,false,false));}
+    box.parentElement.querySelector('h3').textContent=(t===0?'Mavi':'Kırmızı')+' takım · '+ms.length+'/'+size;
   }
   const spectators=room.members.filter(x=>x.spectator);
   $('spectators').textContent='Seyirciler: '+(spectators.length?spectators.map(x=>x.nick).join(', '):'yok');
@@ -274,9 +409,39 @@ function drawPlayer(p,i,v){
   ctx.font='bold 11px "Trebuchet MS",sans-serif';ctx.textAlign='center';
   ctx.globalAlpha=info.human?1:.65;ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,.6)';ctx.strokeText(info.name,p.x,p.y+PR+24);ctx.fillStyle='#fff';ctx.fillText(info.name,p.x,p.y+PR+24);ctx.globalAlpha=1;
 }
+let crowdCv=null;
+function buildCrowd(){
+  const OX=200,OY=220,cv2=document.createElement('canvas');cv2.width=1400;cv2.height=1100;const g=cv2.getContext('2d');
+  let seed=12345;const rnd=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};
+  const shirts=['#1b63e6','#e2302d','#f2c230','#ffffff','#2a9d8f','#9b5de5','#ff8fab','#222','#f4a261'],skins=['#f0bd8a','#d99a6c','#b97a4b','#8d5a3b','#f6d3b0'];
+  function stand(x0,y0,w,h,rows,vertical){
+    const gr=g.createLinearGradient(0,y0,0,y0+h);gr.addColorStop(0,'#3a4350');gr.addColorStop(1,'#242b34');
+    g.fillStyle=vertical?'#2e3641':gr;g.fillRect(x0+OX,y0+OY,w,h);
+    const n=vertical?Math.floor(w/15):Math.floor(w/15);
+    for(let r=0;r<rows;r++){
+      const ry=y0+OY+(vertical?0:6)+r*(h/rows);
+      g.fillStyle='rgba(255,255,255,.06)';if(!vertical)g.fillRect(x0+OX,ry+h/rows-3,w,2);
+      for(let i=0;i<(vertical?Math.floor(h/15):n);i++){
+        const px=vertical?x0+OX+6+r*(w/rows)+(rnd()-.5)*3:x0+OX+8+i*15+(rnd()-.5)*4+(r%2)*7;
+        const py=vertical?y0+OY+8+i*15+(rnd()-.5)*4+(r%2)*7:ry+8;
+        if(rnd()<.08)continue;
+        g.fillStyle=shirts[(rnd()*shirts.length)|0];g.beginPath();g.arc(px,py+6,7,Math.PI,0);g.fill();
+        g.fillRect(px-7,py+6,14,3);
+        g.fillStyle=skins[(rnd()*skins.length)|0];g.beginPath();g.arc(px,py,5,0,7);g.fill();
+        if(rnd()<.12){g.strokeStyle=skins[0];g.lineWidth=2;g.beginPath();g.moveTo(px+6,py+6);g.lineTo(px+10,py-4);g.stroke();}
+      }
+    }
+  }
+  stand(-170,-150,1340,92,6,false);
+  stand(-170,650,1340,100,6,false);
+  stand(-150,-60,118,730,6,true);
+  stand(1032,-60,118,730,6,true);
+  return cv2;
+}
 function drawPitch(){
-  for(let y=0;y<12;y++)for(let x=0;x<20;x++){ctx.fillStyle=(x+y)%2?'#7dc61f':'#8ad02a';ctx.fillRect(x*50,y*50,50,50);}
-  ctx.strokeStyle='rgba(255,255,255,.88)';ctx.lineWidth=2.5;
+  if(!crowdCv)crowdCv=buildCrowd();ctx.drawImage(crowdCv,-200,-220);
+  for(let y=0;y<12;y++)for(let x=0;x<20;x++){ctx.fillStyle=(x+y)%2?'#b6d51d':'#c2df24';ctx.fillRect(x*50,y*50,50,50);}
+  ctx.strokeStyle='rgba(255,255,255,.82)';ctx.lineWidth=2.5;
   ctx.strokeRect(L,T,R-L,B-T);
   ctx.beginPath();ctx.moveTo(500,T);ctx.lineTo(500,B);ctx.stroke();
   ctx.beginPath();ctx.arc(500,300,CR,0,7);ctx.stroke();
@@ -293,19 +458,43 @@ function drawPitch(){
     for(let j=GY1;j<=GY2;j+=8){ctx.beginPath();ctx.moveTo(x,j);ctx.lineTo(x+w,j);ctx.stroke();}
     ctx.strokeStyle=s<0?'#1b63e6':'#e2302d';ctx.lineWidth=5;ctx.strokeRect(x,GY1,w,GY2-GY1);
   }
+  // yedek kulübeleri ve reklam panoları (sahanın dışında)
+  for(const side of [0,1]){
+    const y0=side?B+14:T-14-34-30; const by=side?B+18:-36;
+    ctx.fillStyle='rgba(15,28,10,.55)';ctx.fillRect(L,side?B+4:T-8,R-L,4);
+    for(let x=L;x<R;x+=60){ctx.fillStyle=(x/60|0)%2?'#1b63e6':'#e2302d';ctx.globalAlpha=.55;ctx.fillRect(x,side?B+8:T-14,58,6);ctx.globalAlpha=1;}
+    for(const [bx,col,name] of [[250,'#1b63e6','MAVİ YEDEK'],[660,'#e2302d','KIRMIZI YEDEK']]){
+      const yy=side?B+22:T-70;
+      ctx.fillStyle='rgba(0,0,0,.25)';ctx.fillRect(bx+4,yy+4,170,40);
+      ctx.fillStyle='#e9eef2';ctx.fillRect(bx,yy,170,10);
+      ctx.fillStyle=col;ctx.fillRect(bx,yy+(side?30:10),170,10);
+      ctx.fillStyle='rgba(180,220,255,.28)';ctx.fillRect(bx,yy+10,170,20);
+      ctx.strokeStyle='#e9eef2';ctx.lineWidth=2;ctx.strokeRect(bx,yy,170,40);
+      for(let i=0;i<5;i++){ctx.fillStyle=col;ctx.beginPath();ctx.arc(bx+24+i*30,yy+20,8,0,7);ctx.fill();ctx.fillStyle='#f0bd8a';ctx.beginPath();ctx.arc(bx+24+i*30,yy+19,5,0,7);ctx.fill();}
+      ctx.fillStyle='#fff';ctx.font='bold 9px "Trebuchet MS",sans-serif';ctx.textAlign='center';ctx.fillText(name,bx+85,yy+(side?52:-5));
+    }
+  }
 }
 function draw(dt){
-  ctx.clearRect(0,0,W,H);drawPitch();
-  const v=view();if(!v||!roster){return;}
+  ctx.clearRect(0,0,W,H);
+  const v=view();if(!v||!roster){drawPitch();return;}
+  // Kamera aksiyonu takip eder: tüm saha aynı anda görünmez, oyuncular/top daha büyük görünür.
+  const me0=mySlot>=0?v.players[mySlot]:null;
+  const zoom=cv.clientWidth<600?2.0:1.38;
+  const camX=me0?me0.x:v.ball.x, camY=(()=>{const lim=H/2/zoom-25;return Math.max(H/2-lim,Math.min(H/2+lim,me0?me0.y:v.ball.y));})();
+  ctx.save();
+  ctx.translate(W/2,H/2);ctx.scale(zoom,zoom);ctx.translate(-camX,-camY);
+  ctx.fillStyle='#2f5f12';ctx.fillRect(-800,-600,2600,1800);
+  drawPitch();
   for(const [i,p] of v.players.entries())if(p&&p.dash)trail.push({x:p.x,y:p.y,a:1});
   for(const q of trail)q.a-=dt*4;trail=trail.filter(q=>q.a>0);
   for(const q of trail){ctx.globalAlpha=q.a*.4;ctx.fillStyle='#bfe8ff';ctx.beginPath();ctx.arc(q.x,q.y,PR*q.a,0,7);ctx.fill();}
   ctx.globalAlpha=1;
   if(v.k&&!v.ov){
-    const pu=.6+.4*Math.sin(performance.now()/90),team=v.k[0];ctx.save();
-    ctx.fillStyle='rgba(255,60,50,'+(.14*pu)+')';ctx.fillRect(team===0?L:500,T,team===0?500-L:R-500,B-T);
-    ctx.strokeStyle='rgba(255,230,80,'+pu+')';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(500,T);ctx.lineTo(500,300-CR);ctx.moveTo(500,300+CR);ctx.lineTo(500,B);ctx.stroke();ctx.beginPath();ctx.arc(500,300,CR,0,7);ctx.stroke();
-    ctx.fillStyle='rgba(255,255,255,.9)';ctx.font='bold 38px "Trebuchet MS",sans-serif';ctx.textAlign='center';ctx.fillText(Math.ceil(v.k[1]),500,T+46);ctx.restore();
+    const pu=.6+.4*Math.sin(performance.now()/90);ctx.save();
+    ctx.fillStyle='rgba(255,230,80,'+(.10*pu)+')';ctx.fillRect(L,T,R-L,B-T);
+    ctx.strokeStyle='rgba(255,230,80,'+pu+')';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(500,T);ctx.lineTo(500,B);ctx.stroke();
+    ctx.restore();
   }
   const me=mySlot>=0?v.players[mySlot]:null;
   if(me&&!v.ov&&v.h===mySlot){
@@ -324,6 +513,27 @@ function draw(dt){
   ctx.restore();
   for(const c of conf){c.vy+=600*dt;c.x+=c.vx*dt;c.y+=c.vy*dt;c.l-=dt;ctx.globalAlpha=Math.max(0,Math.min(1,c.l));ctx.fillStyle=c.c;ctx.fillRect(c.x,c.y,6,4);}
   ctx.globalAlpha=1;conf=conf.filter(c=>c.l>0);
+  ctx.restore();
+  {
+    const bsx=W/2+(v.ball.x-camX)*zoom,bsy=H/2+(v.ball.y-camY)*zoom,m=14;
+    if(bsx<m||bsx>W-m||bsy<m||bsy>H-m){
+      const cx=W/2,cy=H/2,dx=bsx-cx,dy=bsy-cy,ang=Math.atan2(dy,dx);
+      const k=Math.min((W/2-34)/(Math.abs(dx)||1e-6),(H/2-34)/(Math.abs(dy)||1e-6));
+      const ax=cx+dx*k,ay=Math.max(64,cy+dy*k),far=Math.hypot(dx,dy)/Math.hypot(W/2,H/2),pu=1+.08*Math.sin(performance.now()/160);
+      ctx.save();ctx.translate(ax,ay);ctx.globalAlpha=Math.max(.55,Math.min(1,1.2-far*.3));
+      ctx.fillStyle='rgba(0,0,0,.45)';ctx.beginPath();ctx.arc(0,0,22*pu,0,7);ctx.fill();
+      ctx.rotate(ang);ctx.fillStyle='#fff';ctx.strokeStyle='#222';ctx.lineWidth=2;
+      ctx.beginPath();ctx.moveTo(30*pu,0);ctx.lineTo(10,-13);ctx.lineTo(10,13);ctx.closePath();ctx.fill();ctx.stroke();
+      ctx.rotate(-ang);ctx.beginPath();ctx.arc(-4,0,9,0,7);ctx.fillStyle='#fff';ctx.fill();ctx.lineWidth=1.6;ctx.stroke();
+      ctx.fillStyle='#222';ctx.beginPath();ctx.arc(-4,0,2.8,0,7);ctx.fill();
+      ctx.restore();
+    }
+  }
+  if(v.k&&!v.ov){
+    const n=Math.max(1,Math.ceil(v.k[1])),fr=1-(v.k[1]-Math.floor(v.k[1]-1e-6)),sc=1+.25*(1-Math.min(1,fr*2));
+    ctx.save();ctx.translate(W/2,112);ctx.scale(sc,sc);ctx.textAlign='center';ctx.font='bold 72px "Trebuchet MS",sans-serif';
+    ctx.lineWidth=8;ctx.strokeStyle='rgba(0,0,0,.55)';ctx.strokeText(n,0,0);ctx.fillStyle='#ffe450';ctx.fillText(n,0,0);ctx.restore();
+  }
   if(v.bn||v.ov){
     ctx.fillStyle='rgba(8,14,6,.6)';ctx.fillRect(0,230,W,140);
     ctx.fillStyle='#fff';ctx.textAlign='center';ctx.font='bold 54px "Trebuchet MS",sans-serif';
@@ -381,6 +591,9 @@ bind('b1',()=>send({t:'ev',k:'ball'}));bind('b2',()=>send({t:'ev',k:'fwd'}));
 bind('b3',()=>{btn.p3=true;sendIn(true);},()=>{btn.p3=false;sendIn(true);});
 bind('b4',()=>{btn.sp=true;sendIn(true);},()=>{btn.sp=false;sendIn(true);});
 addEventListener('contextmenu',e=>{if(e.target.closest&&e.target.closest('.ctl'))e.preventDefault();});
+for(const b of document.querySelectorAll('#modeSeg button'))b.onclick=()=>{$('teamSize').value=b.dataset.v;for(const o of document.querySelectorAll('#modeSeg button'))o.setAttribute('aria-checked',o===b?'true':'false');};
+$('dice').onclick=()=>{const a=['Kaptan','Golcü','Kanat','Libero','Fırtına','Çelik','Yıldız','Kartal','Bomba','Usta'];nickIn.value=a[Math.floor(Math.random()*a.length)]+(10+Math.floor(Math.random()*90));nickIn.focus();};
+$('jcode').addEventListener('input',e=>{e.target.value=e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,'');});
 nickIn.addEventListener('keydown',e=>{if(e.key==='Enter')$('create').click();});
 
 $('gfs').onclick=()=>{try{const d=document.documentElement;if(document.fullscreenElement){document.exitFullscreen();}else{(d.requestFullscreen||d.webkitRequestFullscreen).call(d);}const so=window.screen&&window.screen.orientation;if(so&&so.lock)so.lock('landscape').catch(()=>{});}catch(e){}};
