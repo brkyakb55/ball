@@ -3,11 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
-<title>Tut &amp; Fırlat Online</title>
+<title>GoBall — Online Futbol</title>
 <style>
 :root{--bg:#eef3e8;--ink:#14210f;--panel:#ffffff;--mute:#4d5c44;--line:#c9d6bd;--blue:#1b63e6;--red:#e2302d;--accent:#2f8f1f}
 @media (prefers-color-scheme:dark){:root{--bg:#0d140b;--ink:#eaf3de;--panel:#16210f;--mute:#9db08c;--line:#2c3d22;--accent:#7fd34a}}
 *{box-sizing:border-box}
+.brand{display:flex;align-items:center;gap:14px;padding:22px 24px;border-radius:20px;background:linear-gradient(125deg,#142b18,#2d6b2a 58%,#94cf35);color:#fff;box-shadow:0 12px 30px rgba(24,70,24,.22);overflow:hidden;position:relative}
+.brand:after{content:"";position:absolute;width:220px;height:220px;border:22px solid rgba(255,255,255,.09);border-radius:50%;right:-55px;top:-95px}
+.brandball{width:64px;height:64px;flex:0 0 64px;display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.16);border:2px solid rgba(255,255,255,.48);font-size:2.4rem;box-shadow:inset 0 0 18px rgba(255,255,255,.14)}
+.brand h1{font-size:2.4rem;letter-spacing:-.05em;margin:0;font-weight:900}.tagline{font-size:.92rem;opacity:.88;letter-spacing:.08em;text-transform:uppercase;font-weight:800;margin-top:2px}
+.hero-copy{padding:0 4px;color:var(--mute);font-size:1rem;line-height:1.5}
+#menu .card{border-radius:16px;padding:17px;box-shadow:0 5px 18px rgba(35,65,24,.055)}
+#menu .card h2{font-size:1.05rem;letter-spacing:.01em}
+#menu .btn{border-radius:10px;transition:transform .12s ease,filter .12s ease}#menu .btn:hover{filter:brightness(1.05);transform:translateY(-1px)}
+
 html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font-family:"Trebuchet MS","Segoe UI",Arial,sans-serif;min-height:100dvh;padding:12px;padding-top:max(12px,env(safe-area-inset-top));padding-bottom:max(12px,env(safe-area-inset-bottom))}
 .hidden{display:none!important}
@@ -34,14 +43,14 @@ button.btn:disabled{opacity:.5;cursor:default}
 .mem{padding:4px 0;font-weight:600}
 .code{font-size:1.6rem;letter-spacing:.25em;font-weight:800}
 #toast{position:fixed;left:50%;top:14px;transform:translateX(-50%);background:#1d2b16;color:#fff;padding:10px 16px;border-radius:8px;z-index:9;max-width:90vw}
-#game{max-width:1000px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:8px}
+#game{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:8px}
 .hud{display:inline-flex;border-radius:10px;overflow:hidden;font-weight:800;box-shadow:0 2px 6px rgba(0,0,0,.25)}
 .hud .s{background:var(--blue);color:#fff;padding:6px 18px;font-size:1.4rem;font-variant-numeric:tabular-nums}
 .hud .s.r{background:var(--red)}
 .hud .t{background:#fff;color:#14210f;padding:6px 20px;font-size:1.4rem;font-variant-numeric:tabular-nums}
-.wrap{position:relative;width:100%;max-width:1000px}
-canvas{width:100%;height:auto;max-height:calc(100dvh - 270px);min-height:180px;object-fit:contain;display:block;border-radius:12px;touch-action:none}
-.controls{position:relative;width:100%;max-width:1000px;height:clamp(170px,26vw,240px)}
+.wrap{position:relative;width:100%;max-width:1200px}
+canvas{width:100%;height:auto;max-height:calc(100dvh - 210px);min-height:220px;object-fit:contain;display:block;border-radius:12px;touch-action:none}
+.controls{position:relative;width:100%;max-width:1200px;height:clamp(170px,26vw,240px)}
 .ctl{position:absolute;touch-action:none;user-select:none;-webkit-user-select:none}
 .js{left:3%;bottom:5%;width:clamp(90px,17%,160px);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(127,160,100,.45),rgba(127,160,100,.15));border:2px solid rgba(127,160,100,.6)}
 .kn{position:absolute;left:50%;top:50%;width:44%;height:44%;margin:-22% 0 0 -22%;border-radius:50%;background:radial-gradient(circle at 40% 35%,#f0a456,#c4651f);box-shadow:0 3px 8px rgba(0,0,0,.35);pointer-events:none}
@@ -53,10 +62,9 @@ canvas{width:100%;height:auto;max-height:calc(100dvh - 270px);min-height:180px;o
 .rb small{position:absolute;z-index:2;font-size:1.2rem;font-weight:700;color:#fff}
 #b1{width:34%;height:34%;left:0;top:18%}
 #b2{width:34%;height:34%;right:8%;top:0;background:radial-gradient(circle at 38% 30%,#74e6cb,#0e8f7e 70%)}
-#b3{width:30%;height:30%;left:6%;bottom:0;background:radial-gradient(circle at 38% 30%,#ffb870,#d9661a 70%)}
 #b4{width:56%;height:56%;right:0;bottom:0}
 #b4 span{font-size:1.5rem}
-.hint{max-width:1000px;color:var(--mute);font-size:.9rem;line-height:1.5;text-align:center}
+.hint{max-width:1200px;color:var(--mute);font-size:.9rem;line-height:1.5;text-align:center}
 kbd{background:var(--panel);border:1px solid var(--mute);border-radius:5px;padding:1px 7px;font-family:inherit;color:var(--ink)}
 
 html,body{overscroll-behavior:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
@@ -80,8 +88,8 @@ html,body{overscroll-behavior:none;-webkit-user-select:none;user-select:none;-we
 <div id="toast" class="hidden"></div>
 
 <div id="menu" class="screen">
-  <h1>⚽ Tut &amp; Fırlat Online</h1>
-  <div class="muted">1'e 1, 2'ye 2 veya 3'e 3 top-down futbol. Oda kur, arkadaşlarını davet et ya da maçı seyret.</div>
+  <div class="brand"><div class="brandball">⚽</div><div><h1>GoBall</h1><div class="tagline">Hızlı maçlar. Saf rekabet.</div></div></div>
+  <div class="hero-copy">Kendi odanı kur, arkadaşlarını çağır ve sahaya çık. Tarayıcıdan, indirmeden oyna.</div>
   <div class="card">
     <h2>Takma adın</h2>
     <div class="row"><input type="text" id="nick" maxlength="14" placeholder="Nick (en fazla 14 harf)" autocomplete="off"></div>
@@ -134,12 +142,11 @@ html,body{overscroll-behavior:none;-webkit-user-select:none;user-select:none;-we
     <div class="ctl pad">
       <button class="rb" id="b1"><span>1</span><em>Tut</em><small></small></button>
       <button class="rb" id="b2"><span>2</span><em>Atla</em><small></small></button>
-      <button class="rb" id="b3"><span>3</span><em>Pas</em></button>
-      <button class="rb" id="b4"><span>⚽</span><em>Şut · Basılı tut</em></button>
+      <button class="rb" id="b4"><span>⚽</span><em>Şut</em></button>
     </div>
   </div>
   <div class="row"><button class="btn alt" id="gback">Lobiye dön</button><button class="btn alt" id="grole">Seyirci moduna geç</button><button class="btn alt" id="gfs">⛶ Tam ekran</button><button class="btn alt" id="gleave">Odadan çık</button></div>
-  <div class="hint"><kbd>W A S D</kbd> veya oklar: hareket · <kbd>Boşluk</kbd>/⚽: basılı tutup güç biriktir, bırakınca şut · <kbd>3</kbd>: pas (basılı tut = aşırtma) · <kbd>1</kbd>: topa atıl/topu kap · <kbd>2</kbd>: ileri atıl · Top sende iken yön değiştirerek topu önünde döndür. Mobilde sol joystick ve sağdaki butonlar.</div>
+  <div class="hint"><kbd>W A S D</kbd> veya oklar: hareket · <kbd>Boşluk</kbd>/⚽: tek dokunuşla şut · <kbd>1</kbd>: topa atıl/topu kap · <kbd>2</kbd>: ileri atıl · Top sende iken yön değiştirerek topu önünde döndür. Mobilde sol joystick ve sağdaki butonlar.</div>
 </div>
 
 <script>
@@ -275,7 +282,7 @@ function drawPlayer(p,i,v){
   ctx.globalAlpha=info.human?1:.65;ctx.lineWidth=3;ctx.strokeStyle='rgba(0,0,0,.6)';ctx.strokeText(info.name,p.x,p.y+PR+24);ctx.fillStyle='#fff';ctx.fillText(info.name,p.x,p.y+PR+24);ctx.globalAlpha=1;
 }
 function drawPitch(){
-  for(let y=0;y<12;y++)for(let x=0;x<20;x++){ctx.fillStyle=(x+y)%2?'#7dc61f':'#8ad02a';ctx.fillRect(x*50,y*50,50,50);}
+  for(let y=0;y<12;y++)for(let x=0;x<20;x++){ctx.fillStyle=(x+y)%2?'#91cf32':'#a2dc3d';ctx.fillRect(x*50,y*50,50,50);}ctx.fillStyle='rgba(255,255,255,.035)';for(let x=0;x<1000;x+=100)ctx.fillRect(x,0,50,600);
   ctx.strokeStyle='rgba(255,255,255,.88)';ctx.lineWidth=2.5;
   ctx.strokeRect(L,T,R-L,B-T);
   ctx.beginPath();ctx.moveTo(500,T);ctx.lineTo(500,B);ctx.stroke();
@@ -343,7 +350,7 @@ function loop(n){
 }
 
 // ---------- girdi ----------
-const keys={},stick={x:0,y:0},js=$('js'),kn=$('kn');let jid=null,stickActive=false,btn={sp:false,p3:false},lastIn='',lastInT=0;
+const keys={},stick={x:0,y:0},js=$('js'),kn=$('kn');let jid=null,stickActive=false,btn={sp:false},lastIn='',lastInT=0;
 function keyVec(){
   let x=(keys.KeyD||keys.ArrowRight?1:0)-(keys.KeyA||keys.ArrowLeft?1:0)+stick.x;
   let y=(keys.KeyS||keys.ArrowDown?1:0)-(keys.KeyW||keys.ArrowUp?1:0)+stick.y;
@@ -351,7 +358,7 @@ function keyVec(){
 }
 function sendIn(force){
   if(screen!=='game')return;
-  const v=keyVec(),o={t:'in',x:+v.x.toFixed(2),y:+v.y.toFixed(2),sp:!!(keys.Space||btn.sp),p3:!!(keys.Digit3||keys.Numpad3||btn.p3)};
+  const v=keyVec(),o={t:'in',x:+v.x.toFixed(2),y:+v.y.toFixed(2),sp:!!(keys.Space||btn.sp)};
   const s=JSON.stringify(o),now=performance.now();
   if(force||s!==lastIn||now-lastInT>250){lastIn=s;lastInT=now;send(o);}
 }
@@ -364,7 +371,6 @@ addEventListener('keydown',e=>{
   if(!e.repeat){
     if(e.code==='Digit2'||e.code==='Numpad2'){send({t:'ev',k:'fwd'});fl('b2');}
     else if(e.code==='Digit1'||e.code==='Numpad1'){send({t:'ev',k:'ball'});fl('b1');}
-    else if(e.code==='Digit3'||e.code==='Numpad3')fl('b3');
     if(e.code==='Space')$('b4').classList.add('on');
   }
   sendIn(true);
@@ -378,7 +384,6 @@ const jend=e=>{if(e.pointerId===jid){jid=null;stickActive=false;stick.x=stick.y=
 js.addEventListener('pointerup',jend);js.addEventListener('pointercancel',jend);
 function bind(id,down,up){const b=$(id);b.addEventListener('pointerdown',e=>{e.preventDefault();b.setPointerCapture(e.pointerId);b.classList.add('on');down();});const u=()=>{b.classList.remove('on');if(up)up();};b.addEventListener('pointerup',u);b.addEventListener('pointercancel',u);}
 bind('b1',()=>send({t:'ev',k:'ball'}));bind('b2',()=>send({t:'ev',k:'fwd'}));
-bind('b3',()=>{btn.p3=true;sendIn(true);},()=>{btn.p3=false;sendIn(true);});
 bind('b4',()=>{btn.sp=true;sendIn(true);},()=>{btn.sp=false;sendIn(true);});
 addEventListener('contextmenu',e=>{if(e.target.closest&&e.target.closest('.ctl'))e.preventDefault();});
 nickIn.addEventListener('keydown',e=>{if(e.key==='Enter')$('create').click();});
